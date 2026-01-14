@@ -1,0 +1,109 @@
+# NASA PCOE EDA Warning Management Configuration
+# This file defines warning suppression settings for different environments
+
+# Global warning suppression (can be overridden by environment variables)
+global:
+  suppress_warnings: true
+  log_suppressed_warnings: false
+  max_warnings_per_category: 100
+
+# Category-specific settings
+categories:
+  font:
+    suppress: true
+    description: "Japanese font warnings from matplotlib"
+    patterns:
+      - ".*Glyph.*missing from current font.*"
+      - ".*findfont.*"
+      - ".*font.*not found.*"
+      - ".*Japanese.*font.*"
+      - ".*Font.*family.*not found.*"
+      - ".*Substituting.*font.*"
+  
+  matplotlib:
+    suppress: true
+    description: "General matplotlib warnings"
+    modules:
+      - "matplotlib.*"
+  
+  japanize:
+    suppress: true
+    description: "Japanize-matplotlib warnings"
+    modules:
+      - "japanize_matplotlib.*"
+  
+  deprecation:
+    suppress: true
+    description: "Deprecation warnings from dependencies"
+    patterns:
+      - ".*pkg_resources.*"
+      - ".*distutils.*"
+      - ".*imp module.*"
+      - ".*setuptools.*"
+      - ".*collections\\.abc.*"
+  
+  runtime:
+    suppress: false
+    description: "Runtime warnings (usually important)"
+    patterns:
+      - ".*invalid value encountered.*"
+      - ".*divide by zero encountered.*"
+      - ".*Mean of empty slice.*"
+      - ".*Degrees of freedom <= 0.*"
+
+# Environment-specific overrides
+environments:
+  development:
+    global:
+      suppress_warnings: true
+      log_suppressed_warnings: true
+    categories:
+      runtime:
+        suppress: false  # Show runtime warnings in development
+  
+  testing:
+    global:
+      suppress_warnings: true
+      log_suppressed_warnings: false
+    categories:
+      font:
+        suppress: true
+      matplotlib:
+        suppress: true
+      japanize:
+        suppress: true
+      deprecation:
+        suppress: true
+      runtime:
+        suppress: false  # Show runtime warnings in tests
+  
+  ci:
+    global:
+      suppress_warnings: true
+      log_suppressed_warnings: false
+    categories:
+      font:
+        suppress: true
+      matplotlib:
+        suppress: true
+      japanize:
+        suppress: true
+      deprecation:
+        suppress: true
+      runtime:
+        suppress: true  # Suppress all warnings in CI for clean output
+  
+  production:
+    global:
+      suppress_warnings: false  # Show all warnings in production
+      log_suppressed_warnings: true
+
+# Environment variables that control warning behavior
+environment_variables:
+  NASA_PCOE_SUPPRESS_WARNINGS: "Main toggle for warning suppression (true/false)"
+  NASA_PCOE_SUPPRESS_FONT: "Suppress font warnings (true/false)"
+  NASA_PCOE_SUPPRESS_MATPLOTLIB: "Suppress matplotlib warnings (true/false)"
+  NASA_PCOE_SUPPRESS_JAPANIZE: "Suppress japanize-matplotlib warnings (true/false)"
+  NASA_PCOE_SUPPRESS_DEPRECATION: "Suppress deprecation warnings (true/false)"
+  NASA_PCOE_LOG_WARNINGS: "Log suppressed warnings (true/false)"
+  NASA_PCOE_ENV: "Environment name (development/testing/ci/production)"
