@@ -1,0 +1,11 @@
+response_efficiency
+voltage_ratio
+peak_voltage_ratio
+rms_voltage_ratio
+waveform_correlation
+vo_variability
+vl_variability
+response_delay
+response_delay_normalized
+residual_energy_ratio
+vo_complexity

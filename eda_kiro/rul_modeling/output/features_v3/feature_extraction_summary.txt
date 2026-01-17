@@ -1,0 +1,38 @@
+Response Feature Extraction Summary
+================================================================================
+
+Total Samples: 1600
+Capacitors: 8
+Cycles per Capacitor: 200
+Total Features: 15
+
+Feature List:
+--------------------------------------------------------------------------------
+  - response_efficiency
+  - voltage_ratio
+  - peak_voltage_ratio
+  - rms_voltage_ratio
+  - waveform_correlation
+  - vo_variability
+  - vl_variability
+  - response_delay
+  - response_delay_normalized
+  - residual_energy_ratio
+  - vo_complexity
+  - efficiency_degradation_rate
+  - voltage_ratio_deviation
+  - correlation_shift
+  - peak_voltage_ratio_deviation
+
+================================================================================
+Feature Statistics:
+--------------------------------------------------------------------------------
+       response_efficiency  voltage_ratio  peak_voltage_ratio  rms_voltage_ratio  waveform_correlation  vo_variability  vl_variability  response_delay  response_delay_normalized  residual_energy_ratio  vo_complexity        cycle  efficiency_degradation_rate  voltage_ratio_deviation  correlation_shift  peak_voltage_ratio_deviation
+count          1600.000000    1600.000000         1600.000000        1600.000000           1600.000000     1600.000000     1600.000000          1600.0                     1600.0           1.600000e+03    1600.000000  1600.000000                  1592.000000              1592.000000        1592.000000                   1592.000000
+mean           1321.592529      38.036229            7.911304          20.296939              0.899251        0.467152        0.689053             0.0                        0.0           1.092755e-02       0.188445   100.500000                  -328.915865                33.562933           0.156008                      3.910102
+std            2384.796517      71.016254            9.541928          30.169449              0.140781        0.533050        0.479968             0.0                        0.0           5.726640e-02       0.007124    57.752356                   593.731508                81.403808           0.138933                      5.081959
+min               0.006034     -23.957466            0.192580           0.077676              0.332442        0.010653        0.045896             0.0                        0.0           7.907818e-07       0.171246     1.000000                 -1690.997814                 0.000000          -0.399951                      0.000000
+25%               1.111222      -2.116140            1.049672           1.054145              0.832873        0.012836        0.130366             0.0                        0.0           3.961399e-05       0.184238    50.750000                  -152.563323                 1.436545           0.091351                      0.394378
+50%               5.022589       0.992979            2.071506           2.241102              0.990231        0.038425        0.977329             0.0                        0.0           3.300699e-04       0.189158   100.500000                     0.000000                 2.964873           0.230331                      0.718295
+75%             582.865089      25.696160           11.872590          24.141724              0.999788        1.101784        1.155841             0.0                        0.0           5.029467e-04       0.194308   150.250000                     0.726527                20.452160           0.254172                      5.719504
+max            6729.195124     274.799043           30.802511          82.031671              0.999814        1.170942        1.230828             0.0                        0.0           6.748099e-01       0.218747   200.000000                     0.998538               540.572912           0.282365                     16.528738

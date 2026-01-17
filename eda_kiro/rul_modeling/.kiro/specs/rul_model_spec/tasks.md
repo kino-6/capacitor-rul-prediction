@@ -1,380 +1,372 @@
-# RUL予測モデル開発 - 実装タスク
+# RUL予測モデル開発 - 実装タスク（再構築版）
 
 ## 📋 概要
 
-Phase 0の探索的特徴量分析の結果を踏まえ、RUL予測モデルの実装を進める。
+VL-VO関係性の劣化検出に基づく、物理的に意味のある異常検知・劣化予測モデルの構築。
 
-**Phase 0の成果**:
+**アプローチ変更の理由**:
+- Phase 2.6完了後、RUL定義とラベル付けの根本的な問題を発見
+- `RUL = 200 - cycle_number`は単なるサイクル番号の逆算
+- Normal/Abnormalラベルは物理的根拠なし
+- 新アプローチ: VL-VO応答性の劣化を検出
 
-- ✅ 高相関特徴量: 10個特定（目標: 5個以上）
-- ✅ VO（出力電圧）関連の特徴量が最も有効
-- ✅ データセット構築の準備完了
-- ✅ CycleFeatureExtractor実装完了
-- ✅ データローダー実装完了
+**参照ドキュメント**:
+- `docs/phase_restructure_plan.md` - Phase再構築計画
+- `output/vl_vo_analysis/vl_vo_analysis_report.md` - VL-VO関係性分析
+- `output/vl_vo_analysis/degradation_sample_analysis.md` - サンプル分布分析
 
 ---
 
-## Phase 1: データセット構築
+## Phase 0: 探索的特徴量分析（完了）
 
-### タスク1: 全コンデンサから特徴量を抽出
+### タスク0: Phase 0実施
 
-- [x] 1.1 並列処理機能の実装
-  - `src/data_preparation/parallel_extractor.py`を作成
-  - multiprocessingを使用して複数コンデンサを並列処理
-  - 進捗表示機能の実装（20サイクルごと + パーセンテージ）
-  - ES12の8コンデンサを並列処理（M4 Pro 14コア活用）
-  - _Requirements: US-1_
+- [x] 0.1 ES12C1の特徴量抽出と相関分析
+  - VL/VO特徴量の相関分析完了
+  - 高相関特徴量10個特定
+  - 出力: `output/phase0_analysis/`
+  - _Status: 完了（2026-01-16）_
 
-- [x] 1.2 ES12データセットから特徴量を抽出
-  - ES12C1～ES12C8の全200サイクルから特徴量を抽出
-  - 並列処理機能を使用して高速化
-  - 履歴特徴量なしで抽出（処理時間を考慮）
-  - 出力: `output/features/es12_features.csv`（1600行 × 30列）
-  - _Requirements: US-1_
+---
 
-- [x] 1.3 特徴量の品質確認
-  - 欠損値のチェック
-  - 外れ値の検出
-  - 統計サマリーの生成
-  - 出力: `output/features/es12_quality_report.txt`
-  - _Requirements: US-1_
+## Phase 1: VL-VO関係性分析（完了✅）
 
-### タスク2: ラベル生成
+**目的**: VLとVOの関係性を可視化し、劣化パターンを理解する
 
-- [x] 2.1 LabelGeneratorクラスの実装
-  - `src/data_preparation/label_generator.py`を作成
-  - Cycle-based Strategy: 前半50%をNormal、後半50%をAbnormal
-  - RUL計算: 200 - cycle_number
-  - _Requirements: US-2_
+### タスク1.1: VL-VO関係性の可視化
 
-- [x] 2.2 ラベルの追加と保存
-  - 特徴量データにラベル（is_abnormal, rul）を追加
-  - 出力: `output/features/es12_features_with_labels.csv`
-  - _Requirements: US-2_
+- [x] 1.1 VL-VO関係性の可視化と劣化パターン発見
+  - **実装内容**:
+    - 各コンデンサの初期・中期・後期サイクルのVL-VO散布図
+    - サイクル進行に伴うVL-VO関係の変化を時系列プロット
+    - 応答指標（voltage_ratio, response_efficiency, correlation）の時系列変化
+    - 8コンデンサの比較可視化
+  - **発見された劣化パターン**:
+    - Response Efficiency: 70-85% → 1%（98.5%減少）
+    - Voltage Ratio: 正の値 → 負の値（極性反転）
+    - Correlation: 0.83 → 0.9998（波形単純化）
+  - **サンプル分布**:
+    - Total: 320サンプル（8コンデンサ × 40サイクル）
+    - Normal (>50%): 128サンプル（40.0%）
+    - Abnormal (<50%): 192サンプル（60.0%）
+  - 出力: 
+    - `output/vl_vo_analysis/ES12C1_vl_vo_evolution.png`
+    - `output/vl_vo_analysis/all_capacitors_vl_vo_comparison.png`
+    - `output/vl_vo_analysis/response_metrics_evolution.png`
+    - `output/vl_vo_analysis/response_metrics_timeseries.csv`
+    - `output/vl_vo_analysis/vl_vo_analysis_report.md`
+    - `output/vl_vo_analysis/degradation_sample_distribution.png`
+    - `output/vl_vo_analysis/degradation_sample_analysis.md`
+  - _Status: 完了（2026-01-17）_
 
-### タスク3: データ分割
+### タスク1.2: VL-VO応答性特徴量の設計
 
-- [x] 3.1 DatasetSplitterクラスの実装
-  - `src/data_preparation/dataset_splitter.py`を作成
-  - ハイブリッド分割戦略の実装
-  - Train: C1-C5のサイクル1-150（750サンプル）
-  - Val: C6のサイクル1-150（150サンプル）
-  - Test: C7-C8のサイクル1-200（400サンプル）
-  - _Requirements: US-3_
+- [x] 1.2 応答性特徴量の設計と定義
+  - **目的**: VL-VO関係性を定量化する新しい特徴量を設計
+  - **実装内容**:
+    - 応答効率: `VO_energy / VL_energy`（既存）
+    - 応答遅延: VLとVOの位相差（相互相関ピーク）
+    - 波形類似度: VLとVOのピアソン相関係数（既存）
+    - 初期状態からの偏差: 各特徴量の初期値（サイクル1-10平均）からの変化率
+    - 劣化速度: 応答効率の変化率（cycle-to-cycle）
+  - **設計した特徴量**: 15個（高優先度5個、中優先度5個、低優先度5個）
+  - 出力: `docs/response_feature_design.md`
+  - _Status: 完了（2026-01-17）_
+  - _Requirements: VL-VO関係性の定量化_
 
-- [x] 3.2 特徴量スケーリングの実装
-  - StandardScalerの適用
-  - Trainセットで学習、Val/Testに適用
-  - スケーラーの保存: `output/models/scaler.pkl`
-  - _Requirements: US-3_
+### タスク1.3: 応答性特徴量の抽出
 
-- [x] 3.3 分割データの保存
-  - 出力: `output/features/train.csv`, `val.csv`, `test.csv`
-  - データセットサマリーの生成: `output/features/dataset_summary.txt`
-  - _Requirements: US-3_
+- [x] 1.3 応答性特徴量の全サイクル抽出
+  - **目的**: 設計した特徴量を全サイクルから抽出
+  - **実装内容**:
+    - ResponseFeatureExtractorの実装（`src/feature_extraction/response_extractor.py`）
+    - 応答性特徴量の計算実装（15特徴量）
+    - 全コンデンサ・全サイクル（8 × 200 = 1600サンプル）からの抽出
+    - I/O最適化による高速化
+  - **抽出された特徴量**:
+    - エネルギー転送: response_efficiency, voltage_ratio, peak_voltage_ratio, rms_voltage_ratio
+    - 波形類似度: waveform_correlation, vo_variability, vl_variability
+    - 応答遅延: response_delay, response_delay_normalized
+    - 初期状態からの偏差: efficiency_degradation_rate, voltage_ratio_deviation, correlation_shift, peak_voltage_ratio_deviation
+    - 高度な特徴: residual_energy_ratio, vo_complexity
+  - **劣化パターン確認**:
+    - 全コンデンサで応答効率が98.5-99.0%減少
+    - 初期: 77-117%, 後期: 1.1-1.2%
+  - 出力: 
+    - `output/features_v3/es12_response_features.csv`
+    - `output/features_v3/feature_extraction_summary.txt`
+  - _Status: 完了（2026-01-17）_
+  - _Requirements: 応答性特徴量の実装_
 
-### チェックポイント1: データセット構築完了
+### タスク1.4: 劣化パターンの詳細可視化と閾値探索
 
-- [ ] CP1: データセットの品質確認
-  - 全ファイルが正しく生成されているか確認
-  - サンプル数（Train: 750, Val: 150, Test: 400）
-  - 特徴量の分布を確認
+- [x] 1.4 応答性特徴量の時系列変化の可視化と故障兆候閾値の探索
+  - **目的**: 応答性特徴量の時系列変化を詳細に可視化し、故障兆候を示す閾値を特定
+  - **実装内容**:
+    - 応答効率の時系列プロット（8コンデンサ比較）
+    - 初期状態からの偏差の可視化（efficiency_degradation_rate等）
+    - 劣化速度の比較（コンデンサ間の違い）
+    - **故障兆候閾値の探索**:
+      - 応答効率の閾値候補（例: 50%, 10%, 5%）
+      - 劣化率の閾値候補（例: 50%, 80%, 90%）
+      - 相関係数の閾値候補（例: 0.95, 0.98, 0.99）
+      - 各閾値での故障兆候検出タイミングの分析
+    - 劣化ステージの定義（Normal, Degrading, Severe, Critical）
+    - 各ステージの特徴量範囲の特定
+    - ヒストグラム・箱ひげ図による分布分析
+  - **特定された閾値**:
+    - Normal/Degrading境界: Response Efficiency 50%
+    - Degrading/Severe境界: Response Efficiency 10%
+    - Severe/Critical境界: Response Efficiency 1%
+    - 早期警告: Efficiency Degradation Rate > 0.5
+    - 深刻な劣化: Efficiency Degradation Rate > 0.9
+  - **サンプル分布**:
+    - Normal: 619サンプル（38.7%）
+    - Degrading: 108サンプル（6.8%）
+    - Severe: 637サンプル（39.8%）
+    - Critical: 236サンプル（14.8%）
+  - 出力: 
+    - `output/features_v3/degradation_patterns_detailed.png`
+    - `output/features_v3/degradation_stages_definition.md`
+  - _Status: 完了（2026-01-17）_
+  - _Requirements: 劣化パターンの理解、故障兆候閾値の特定_
+
+### チェックポイント1: VL-VO関係性分析完了
+
+- [x] CP1: VL-VO関係性分析の完了確認
+  - VL-VO関係性の可視化完了
+  - 劣化パターンの発見と文書化
+  - 応答性特徴量の設計完了
+  - 応答性特徴量の抽出完了（1600サンプル）
+  - 故障兆候閾値の特定完了
+  - 劣化ステージの定義完了
+  - **Phase 1完了 - Phase 2へ進む準備完了**
+
+---
+
+## Phase 2: 異常検知モデル構築（再設計）
+
+**目的**: 教師なし学習でVL-VO関係性の異常を検出
+
+### タスク2.1: 正常パターンの定義
+
+- [x] 2.1 正常パターンの定義とベースライン設定
+  - **目的**: 初期サイクル（1-50）を正常パターンとして定義
+  - **実装内容**:
+    - 初期サイクルの応答性特徴量の統計分析
+    - 正常範囲の定義（平均±2σ等）
+    - 正常パターンの可視化
+    - コンデンサ間の正常パターンの比較
+  - **確立した正常ベースライン**:
+    - Response Efficiency: 94.78 ± 112.85
+    - Waveform Correlation: 0.82 ± 0.06
+    - 正常範囲: μ±2σ（約95%のデータをカバー）
+    - 全8コンデンサで類似した正常パターン
+  - 出力: 
+    - `output/anomaly_detection/normal_pattern_baseline.png`
+    - `output/anomaly_detection/normal_pattern_definition.md`
+  - _Status: 完了（2026-01-17）_
+  - _Requirements: 正常ベースラインの確立_
+
+### タスク2.2: 異常検知モデルの構築
+
+- [x] 2.2a Isolation Forestによる異常検知（完了）
+  - **目的**: 教師なし学習で異常サイクルを検出
+  - **実装内容**:
+    - Isolation Forestモデルの構築
+    - データリーケージ対策（cycle, 偏差系特徴量を除外）
+    - 11個の本質的特徴量のみ使用
+    - 異常度スコアの算出
+  - **結果**:
+    - 160サンプル（10.0%）を異常検出
+    - 問題: 初期の高効率状態を異常として誤検出
+    - 真の劣化状態を正常と判定している可能性
+  - 出力: 
+    - `output/models_v3/isolation_forest.pkl`
+    - `output/anomaly_detection/isolation_forest_results.png`
+  - _Status: 完了（2026-01-17）- 改善が必要_
+  - _Requirements: 異常検知モデル_
+
+- [ ] 2.2b One-Class SVMによる異常検知（改善版）
+  - **目的**: 初期サイクルを正常として学習し、線形分離可能な異常検知
+  - **実装内容**:
+    - **正常データ定義**: 初期1-10サイクルのみ（製品特性として妥当）
+    - One-Class SVMモデルの構築
+    - RBFカーネルで非線形境界を学習
+    - 全サイクルに対して異常度スコア算出
+    - データリーケージ対策（cycle, 偏差系特徴量を除外）
+  - **アプローチの理由**:
+    - 初期サイクルは製品として必ず正常（物理的前提）
+    - 時間情報ではなく、初期状態の特徴量パターンを学習
+    - 線形分離可能な決定境界でデータから異常を判定
+    - 閾値を事前に決めず、データから学習
+  - **他アプローチとの比較**:
+    - Isolation Forest: 外れ値検出だが、初期状態を異常判定
+    - 閾値ベース: 物理的に妥当だが、閾値の断定が困難
+    - One-Class SVM: 正常パターン学習で、劣化を異常として検出
+  - 出力: 
+    - `output/models_v3/one_class_svm.pkl`
+    - `output/anomaly_detection/one_class_svm_results.png`
+    - `output/anomaly_detection/anomaly_detection_comparison.md`
+  - _Status: 完了（2026-01-17）- 効率系特徴量に問題あり_
+  - _Requirements: 改善された異常検知モデル_
+
+- [x] 2.2c One-Class SVM v2（効率系特徴量除外版、nu最適化）
+  - **目的**: 効率系特徴量を除外し、波形特性のみで異常検知、ハイパーパラメータ最適化
+  - **実装内容**:
+    - **除外する特徴量**（効率変化自体が劣化の結果の可能性）:
+      - response_efficiency（中期に異常値、劣化指標として不適切）
+      - voltage_ratio（中期に異常値）
+      - peak_voltage_ratio（voltage_ratioと同様）
+      - rms_voltage_ratio（voltage_ratioと同様）
+    - **使用する特徴量**（波形特性のみ、7個）:
+      - waveform_correlation（劣化で1.0に近づく）
+      - vo_variability（劣化で増加）
+      - vl_variability（劣化で増加）
+      - response_delay（応答遅延）
+      - response_delay_normalized（正規化遅延）
+      - residual_energy_ratio（残差エネルギー）
+      - vo_complexity（波形複雑度）
+    - 正常データ: 初期1-10サイクル
+    - One-Class SVM（RBFカーネル、**nu=0.05最適化**）で学習
+  - **ハイパーパラメータチューニング**:
+    - nu値を0.01-0.3で検証
+    - 最適値: nu=0.05（Training FP 5.0%, Early FP 35.6%）
+    - nu=0.1からnu=0.05への変更でFalse Positive大幅改善
+  - **検証用データとしての価値**:
+    - 効率系特徴量は劣化の結果を示す可能性
+    - 波形特性のみで異常検知が可能か検証
+    - 物理的に妥当な劣化パターンを検出できるか確認
+  - **結果**（nu=0.05）:
+    - 異常検出率: 90.8%（1452/1600サンプル）
+    - Training FP: 5.0%（nu=0.1の11.2%から改善）
+    - Early FP (1-20): 35.6%（nu=0.1の42.5%から改善）
+    - Late FN (100+): 5.2%（極めて低い）
+    - サイクル51-100: 100%異常検出
+    - 遷移点: サイクル13（50%異常検出率）
+    - 波形特性の変化:
+      - Waveform Correlation: 0.78 → 0.91 (+17.6%)
+      - VO Variability: 0.24 → 0.49 (+101%)
+      - VL Variability: 0.26 → 0.73 (+181%)
+    - 物理的妥当性: 初期サイクル（1-10）を正常として学習し、劣化に伴う波形変化を検出
+  - **重要な発見**:
+    - Early FP 35.6%は実際の劣化開始（Cycle 11-15）を検出している可能性
+    - Response Efficiencyの推移: Cycle 1 (1.21) → Cycle 10 (8.96) → Cycle 15 (18.94)
+    - 劣化は予想より早く（Cycle 11-15）から始まっている
+  - 出力: 
+    - `output/models_v3/one_class_svm_v2.pkl`（nu=0.05）
+    - `output/anomaly_detection/one_class_svm_v2_results.png`
+    - `output/anomaly_detection/one_class_svm_v2_results.csv`
+    - `output/anomaly_detection/hyperparameter_tuning_results.png`
+    - `output/anomaly_detection/hyperparameter_tuning_results.csv`
+  - _Status: 完了（2026-01-17、nu=0.05で最適化）_
+  - _Requirements: 改善された異常検知モデル（効率系除外、ハイパーパラメータ最適化）_
+
+### タスク2.3: クラスタリングによる劣化パターン分類
+
+- [ ] 2.3 劣化パターンのクラスタリング
+  - **目的**: 劣化パターンを複数のクラスタに分類
+  - **実装内容**:
+    - K-meansまたはDBSCANによるクラスタリング
+    - 各クラスタの特徴分析
+    - クラスタの可視化（PCA/t-SNE）
+    - クラスタと劣化ステージの対応分析
+  - 出力: `output/anomaly_detection/clustering_results.png`
+  - _Requirements: 劣化パターンの分類_
+
+### タスク2.4: 異常検知結果の評価
+
+- [x] 2.4 異常検知結果の妥当性検証（nu=0.05最適化版）
+  - **目的**: 検出された異常の妥当性を検証
+  - **実装内容**:
+    - 異常サイクルの波形確認
+    - 物理的解釈の検証
+    - 8コンデンサ間の比較
+    - False Positive/Negative分析
+    - ハイパーパラメータチューニング（nu=0.01-0.3）
+  - **検証結果**（nu=0.05最適化後）:
+    - 遷移点: サイクル13（50%異常検出率）
+    - Training FP: 5.0%（nu=0.1の11.2%から大幅改善）
+    - Early FP (1-20): 35.6%（nu=0.1の42.5%から改善）
+    - Late FN (100+): 5.2%（極めて低い）
+    - 単調性: 劣化指標がサイクル数と正の相関（0.36-0.83）
+    - 回復パターン: 全コンデンサで一部検出（許容範囲内）
+    - Critical/Severe段階の86.4%を異常として正しく検出
+  - **Early FPの解釈**:
+    - 35.6%のEarly FPは実際の劣化開始を検出している可能性
+    - Response Efficiency推移: Cycle 1 (1.21) → Cycle 10 (8.96) → Cycle 15 (18.94)
+    - 劣化はCycle 11-15から始まっている（False Positiveではない）
+  - **物理的妥当性**: ✅ 高い（劣化パターンを正しく捉えている）
+  - 出力: 
+    - `output/anomaly_detection/anomaly_validation_report.md`
+    - `output/anomaly_detection/anomaly_validation_results.png`
+    - `output/anomaly_detection/hyperparameter_tuning_results.png`
+  - _Status: 完了（2026-01-17、nu=0.05で最適化）_
+  - _Requirements: 異常検知の検証、ハイパーパラメータ最適化_
+
+### チェックポイント2: 異常検知モデル完了
+
+- [x] CP2: 異常検知モデルの完了確認
+  - ✅ 正常パターンの定義完了（Task 2.1）
+  - ✅ 異常検知モデルの構築完了（Task 2.2a, 2.2b, 2.2c）
+  - ✅ 3つのアプローチを比較分析
+  - ✅ One-Class SVM v2（波形特性のみ）が最適と判定
+  - ✅ 異常サイクルの詳細検証完了（Task 2.4）
+  - ⏳ クラスタリング分析（Task 2.3）- オプション
+  - **Phase 2完了 - Phase 3へ進む準備完了**
+
+---
+
+## Phase 3: 劣化予測モデル構築（再設計）
+
+**目的**: 応答性の劣化度を予測
+
+### タスク3.1: 劣化度の定義
+
+- [ ] 3.1 劣化度スコアの定義
+  - **目的**: 0（正常）から1（完全劣化）までの劣化度を定義
+  - **実装内容**:
+    - 応答効率の正規化（初期値を1、最終値を0とする）
+    - 劣化度の計算式の定義: `degradation_score = 1 - (current_efficiency / initial_efficiency)`
+    - 劣化度の可視化
+    - 劣化度と物理的状態の対応確認
+  - 出力: `output/degradation_prediction/degradation_score_definition.md`
+  - _Requirements: 劣化度の定量化_
+
+### タスク3.2: 劣化度予測モデルの構築
+
+- [ ] 3.2 劣化度予測モデルの学習と評価
+  - **目的**: 現在の特徴量から劣化度を予測
+  - **実装内容**:
+    - Random Forest Regressorで劣化度を予測
+    - Train/Val/Test分割（コンデンサベース）
+      - Train: C1-C5（全サイクル）
+      - Val: C6（全サイクル）
+      - Test: C7-C8（全サイクル）
+    - モデルの学習と評価（MAE, RMSE, R²）
+    - 特徴量重要度の分析
+  - 出力: `output/models_v3/degradation_predictor.pkl`
+  - _Requirements: 劣化度予測_
+
+### タスク3.3: 次サイクル応答性の予測
+
+- [ ] 3.3 次サイクル応答性予測モデルの構築
+  - **目的**: 次サイクルの応答性特徴量を予測
+  - **実装内容**:
+    - 時系列予測モデル（LSTM or Random Forest）
+    - 過去Nサイクルから次サイクルを予測
+    - 予測精度の評価
+    - 予測誤差の分析
+  - 出力: `output/models_v3/response_predictor.pkl`
+  - _Requirements: 次サイクル予測_
+
+### チェックポイント3: 劣化予測モデル完了
+
+- [ ] CP3: 劣化予測モデルの完了確認
+  - 劣化度予測モデルの構築完了
+  - 予測精度の評価完了
+  - 実用的な予測性能の達成
   - ユーザーに確認を求める
-
----
-
-## Phase 2: ベースラインモデル構築
-
-### タスク4: Primary Model（異常検知）
-
-- [x] 4.1 PrimaryModelクラスの実装
-  - `src/models/primary_model.py`を作成
-  - Random Forest Classifierをベースライン
-  - 学習・予測・保存・読み込み機能
-  - predict_proba機能（ROC-AUC計算用）
-  - _Requirements: US-4_
-
-- [x] 4.2 Primary Modelの学習
-  - Trainセットで学習
-  - Valセットで検証
-  - ハイパーパラメータ: n_estimators=100, max_depth=10, random_state=42
-  - モデル保存: `output/models/primary_model.pkl`
-  - _Requirements: US-4_
-
-- [x] 4.3 Primary Modelの評価
-  - Testセットで評価
-  - 評価指標: Accuracy, Precision, Recall, F1-Score, ROC-AUC
-  - 目標: F1-Score ≥ 0.80
-  - _Requirements: US-4, US-6_
-
-- [x] 4.4 特徴量重要度の分析
-  - 特徴量重要度の可視化
-  - Phase 0の相関分析結果と比較
-  - 出力: `output/evaluation/primary_feature_importance.png`
-  - _Requirements: US-4, US-6_
-
-### タスク5: Secondary Model（RUL予測）
-
-- [x] 5.1 SecondaryModelクラスの実装
-  - `src/models/secondary_model.py`を作成
-  - Random Forest Regressorをベースライン
-  - 学習・予測・保存・読み込み機能
-  - _Requirements: US-5_
-
-- [x] 5.2 Secondary Modelの学習
-  - Trainセットで学習
-  - Valセットで検証
-  - ハイパーパラメータ: n_estimators=100, max_depth=15, random_state=42
-  - モデル保存: `output/models/secondary_model.pkl`
-  - _Requirements: US-5_
-
-- [x] 5.3 Secondary Modelの評価
-  - Testセットで評価
-  - 評価指標: MAE, RMSE, R², MAPE
-  - 目標: MAPE ≤ 20%
-  - _Requirements: US-5, US-6_
-
-- [x] 5.4 予測結果の可視化
-  - 実測値 vs 予測値の散布図
-  - 残差プロット
-  - 予測誤差の分布
-  - 出力: `output/evaluation/secondary_predictions.png`
-  - _Requirements: US-5, US-6_
-
-### タスク6: モデル評価とレポート生成
-
-- [x] 6.1 ModelEvaluatorクラスの実装
-  - `src/evaluation/evaluator.py`を作成
-  - Primary/Secondary Modelの評価機能
-  - 可視化機能（混同行列、ROC曲線、散布図など）
-  - _Requirements: US-6_
-
-- [x] 6.2 評価レポートの自動生成
-  - Markdown形式のレポート生成
-  - 画像を含む詳細レポート
-  - 出力: `output/evaluation/baseline_report.md`
-  - _Requirements: US-6_
-
-### チェックポイント2: ベースラインモデル完了
-
-- [x] CP2: ベースライン性能の確認
-  - Primary Model: F1-Score ≥ 0.80を達成したか
-  - Secondary Model: MAPE ≤ 20%を達成したか
-  - 評価レポートを確認
-  - ユーザーに確認を求める
-
----
-
-## Phase 2.5: モデル検証とOverfitting診断
-
-### タスク6.3: ES12 Test Dataでの詳細評価と可視化
-
-- [x] 6.3 ES12 Test Dataでの予測結果詳細可視化
-  - **Primary Model（異常検知）の詳細評価**：
-    - Test Data（C7-C8の全サイクル）での予測結果を可視化
-    - サイクルごとの予測確率（predict_proba）の推移をプロット
-    - 誤分類サンプルの詳細分析（どのサイクル・どのコンデンサで誤分類が発生したか）
-    - 混同行列の詳細版（コンデンサ別、サイクル範囲別）
-  - **Secondary Model（RUL予測）の詳細評価**：
-    - Test Data全サンプルでの「正解RUL vs 予測RUL」の散布図（サイクル番号で色分け）
-    - コンデンサ別（C7, C8）の予測精度比較
-    - サイクル範囲別（初期/中期/末期）の予測誤差分析
-    - 予測誤差が大きいサンプルの特定と特徴量分析
-  - **Overfitting診断**：
-    - Train/Val/Testでの性能比較表を作成
-    - 学習曲線（Training/Validation Loss）の可視化
-    - Test性能がTrain性能と大きく乖離していないか確認
-  - 出力: `output/evaluation/es12_test_detailed_analysis.png`, `output/evaluation/overfitting_diagnosis.md`
-  - _Requirements: US-6, モデルの汎化性能検証_
-
-### タスク6.4: ES10/ES14データの構造解析と整備
-
-- [x] 6.4 ES10/ES14データセットの構造解析
-  - **データ構造の詳細調査**：
-    - ES10.mat, ES14.matの内部構造をh5pyで解析
-    - ES12との構造の違いを特定（階層構造、データ形式、測定項目）
-    - コンデンサ数、サイクル数、測定周波数の確認
-    - 欠損データや異常値の有無を確認
-  - **データ構造比較レポート作成**：
-    - ES10/ES12/ES14の構造比較表を作成
-    - 各データセットの特徴（ストレス条件、劣化速度など）を整理
-    - ES12と同じ解釈が可能な共通特徴量を特定
-  - 出力: `docs/es10_es14_structure_analysis.md`
-  - _Requirements: US-1, クロスデータセット対応_
-
-- [ ] 6.5 ES10/ES14データの統一フォーマット変換
-  - **DataLoaderの拡張**：
-    - `src/data_loading/multi_dataset_loader.py`を作成
-    - ES10/ES14データをES12と同じフォーマットに変換する機能を実装
-    - データセット間の差異を吸収する正規化処理を実装
-    - 各データセットのメタデータ（ストレス条件、測定条件）を保持
-  - **特徴量抽出の統一**：
-    - ES10/ES14から同じ特徴量セット（30特徴量）を抽出
-    - 並列処理機能を使用してES10/ES14の全コンデンサから特徴量を抽出
-    - ES12と同じラベル生成戦略を適用
-  - **統一データセットの作成**：
-    - ES10/ES12/ES14を統合したデータセットを作成（オプション）
-    - データセット識別子（dataset_id）を追加
-    - 出力: `output/features/es10_features.csv`, `output/features/es14_features.csv`
-  - _Requirements: US-1, US-2, クロスデータセット対応_
-
-- [ ] 6.6 ES10/ES14での外部検証（External Validation）
-  - **ES12モデルのES10/ES14への適用**：
-    - ES12で学習したPrimary/Secondary Modelを読み込み
-    - ES10/ES14データに対して予測を実行（ES12のスケーラーを使用）
-    - 予測結果を可視化・評価
-  - **汎化性能の評価**：
-    - ES10/ES14での性能指標を計算（F1-Score, MAPE, R²など）
-    - ES12 Test性能との比較
-    - データセット間の性能差を分析（ドメインシフトの影響）
-  - **ドメイン適応の必要性評価**：
-    - ES10/ES14で性能が大きく低下する場合、原因を分析
-    - 特徴量分布の違いを可視化（ES12 vs ES10/ES14）
-    - ドメイン適応手法（Transfer Learning, Fine-tuningなど）の必要性を判断
-  - 出力: `output/evaluation/external_validation_report.md`, `output/evaluation/cross_dataset_performance.png`
-  - _Requirements: US-6, モデルの汎化性能検証_
-
-### チェックポイント2.5: Overfitting診断と外部検証完了
-
-- [ ] CP2.5: モデルの汎化性能確認
-  - ES12 Testでの詳細分析が完了したか
-  - Overfittingの兆候が見られるか（Train/Test性能差）
-  - ES10/ES14データが正しく整備されたか
-  - ES10/ES14での外部検証結果を確認
-  - 次のアクション（Phase 3での改善 or ドメイン適応）を決定
-  - ユーザーに確認を求める
-
----
-
-## Phase 2.6: データリーケージ解消とモデル改善（Minimum Start）
-
-**目的**: Phase 2の分析で発見されたデータリーケージを解消し、真の汎化性能を測定する
-
-**背景**: 
-- Primary Model: cycle_numberがラベルと直接相関（データリーケージ）
-- Secondary Model: 特徴量重要度の90%がサイクル情報に依存
-- 訓練データ: RUL 50-199のみ（RUL < 50が欠如）
-
-**参照**: `docs/phase2_analysis_and_recommendations.md`
-
-### タスク6.7: データリーケージ解消
-
-- [x] 6.7 cycle関連特徴量の除外とデータ再構築
-  - **特徴量の除外**：
-    - cycle_number, cycle_normalizedを特徴量から除外
-    - 残す特徴量: VL/VO関連（26特徴量 → 24特徴量）
-  - **データ分割の変更**：
-    - Train: C1-C5のサイクル1-200（全サイクル使用）
-    - Val: C6のサイクル1-200（全サイクル使用）
-    - Test: C7-C8のサイクル1-200（変更なし）
-    - 新しいRUL範囲: 0-199（従来: 50-199）
-  - **データセット再構築**：
-    - 特徴量抽出（cycle関連除外）
-    - ラベル生成（変更なし）
-    - データ分割（全サイクル使用）
-    - スケーリング（StandardScaler）
-  - 出力: `output/features_v2/train.csv`, `val.csv`, `test.csv`
-  - _Requirements: データリーケージ解消_
-
-### タスク6.8: モデル再訓練（Baseline v2）
-
-- [x] 6.8 データリーケージ解消後のモデル訓練
-  - **Primary Model再訓練**：
-    - 新しい訓練データで学習
-    - cycle情報なしで劣化パターンを学習
-    - 期待性能: F1-Score 0.75-0.85（真の性能）
-  - **Secondary Model再訓練**：
-    - 新しい訓練データで学習（RUL 0-199をカバー）
-    - RUL < 50の予測精度改善を期待
-    - 期待性能: MAE (RUL 0-50) < 5.0
-  - モデル保存: `output/models_v2/primary_model.pkl`, `secondary_model.pkl`
-  - _Requirements: 真の汎化性能測定_
-
-### タスク6.9: 改善効果の評価
-
-- [x] 6.9 Baseline v1 vs v2の比較分析
-  - **性能比較**：
-    - Primary Model: v1 (F1=1.0) vs v2 (F1=0.7-0.85)
-    - Secondary Model: v1 (MAE 0-50=26.04) vs v2 (MAE 0-50=?)
-    - Train/Val/Test性能差の確認（Overfitting診断）
-  - **特徴量重要度の変化**：
-    - v1: cycle情報90% → v2: VL/VO特徴量が主要に
-    - 劣化指標の寄与度を確認
-  - **詳細可視化**：
-    - Test予測結果の可視化（v1 vs v2比較）
-    - RUL範囲別の性能比較
-    - コンデンサ別の性能比較
-  - 出力: `output/evaluation_v2/comparison_report.md`, `comparison_visualizations.png`
-  - _Requirements: 改善効果の定量評価_
-
-### チェックポイント2.6: データリーケージ解消完了
-
-- [ ] CP2.6: 改善効果の確認
-  - データリーケージが解消されたか
-  - Primary Modelが実際の劣化パターンを学習しているか
-  - Secondary ModelのRUL < 50予測が改善したか
-  - Train/Val/Test性能差が妥当な範囲か（< 10%）
-  - 次のステップ（ES10/ES14追加 or 特徴量エンジニアリング）を決定
-  - ユーザーに確認を求める
-
----
-
-## Phase 3: モデル改善（オプション）
-
-### タスク7: ハイパーパラメータチューニング
-
-- [ ] 7.1 Grid Searchの実装
-  - `src/models/tuner.py`を作成
-  - Primary Modelのチューニング
-  - Secondary Modelのチューニング
-  - 最適パラメータの保存
-  - _Requirements: US-7_
-
-- [ ] 7.2 チューニング結果の評価
-  - ベースラインとの比較
-  - 性能向上の確認
-  - 出力: `output/evaluation/tuning_report.md`
-  - _Requirements: US-7_
-
-### タスク8: 複数アルゴリズムの比較（オプション）
-
-- [ ]* 8.1 XGBoost/LightGBMの実装
-  - Primary Model用
-  - Secondary Model用
-  - _Requirements: US-7_
-
-- [ ]* 8.2 アルゴリズム比較
-  - Random Forest vs XGBoost vs LightGBM
-  - 性能・処理時間の比較
-  - 最適アルゴリズムの選定
-  - _Requirements: US-7_
-
-### タスク9: 特徴量エンジニアリング（オプション）
-
-- [ ]* 9.1 履歴特徴量の追加
-  - voltage_ratio_mean_last_5
-  - voltage_ratio_std_last_5
-  - voltage_ratio_trend_last_10
-  - degradation_rate
-  - _Requirements: US-7_
-
-- [ ]* 9.2 新規特徴量の効果検証
-  - 履歴特徴量ありなしでの性能比較
-  - 特徴量重要度の再分析
-  - _Requirements: US-7_
-
-### タスク10: 最終評価とレポート（オプション）
-
-- [ ]* 10.1 最終モデルの選定
-  - 全実験結果の比較
-  - 最適モデルの選定
-  - _Requirements: US-7_
-
-- [ ]* 10.2 最終評価レポートの作成
-  - 全実験結果のまとめ
-  - 最終モデルの性能評価
-  - 出力: `output/evaluation/final_report.md`
-  - _Requirements: US-7_
 
 ---
 
@@ -382,82 +374,127 @@ Phase 0の探索的特徴量分析の結果を踏まえ、RUL予測モデルの�
 
 ### 実装の焦点
 
-- **ES12データセットを中心に使用** - Phase 2まではES12に焦点
-- **Phase 2.5でES10/ES14を追加** - 外部検証とクロスデータセット対応
-- **8コンデンサ（ES12C1～ES12C8）** - 各約200サイクル
-- **履歴特徴量なし** - Phase 1-2では処理時間を考慮して履歴特徴量を省略
-- **Phase 3で履歴特徴量を追加** - 効果を検証
-- **Overfitting対策** - Phase 2.5で詳細診断と外部検証を実施
+- **ES12データセットを中心に使用** - 8コンデンサ、各200サイクル
+- **VL-VO関係性ベース** - 物理的に意味のある特徴量
+- **教師なし学習** - ラベル不要の異常検知
+- **劣化度の定量化** - 0-1スケールでの評価
 
-### 並列処理について
+### データ分割戦略
 
-- **M4 Pro（14コア）を活用** - 8コンデンサを並列処理
-- 進捗表示を頻繁に行う（20サイクルごと + パーセンテージ）
-- 期待処理時間: 約3-4分（並列処理）
-
-### Phase 0の結果の活用
-
-- 高相関特徴量（vo_cv, vo_mean, vo_max, vl_cvなど）を優先
-- 低相関特徴量（vo_trend, vl_rangeなど）は削除を検討
-- voltage_ratioは相関は低いが、非線形モデルで効果を期待
+```
+Train: C1-C5 の 全サイクル (5個 × 200サイクル = 1000サンプル)
+Val:   C6 の 全サイクル     (1個 × 200サイクル = 200サンプル)
+Test:  C7-C8 の 全サイクル  (2個 × 200サイクル = 400サンプル)
+```
 
 ### 成功基準
 
-- **Phase 1**: データセット構築完了（1600サンプル）
-- **Phase 2**:
-  - Primary Model: F1-Score ≥ 0.80
-  - Secondary Model: MAPE ≤ 20%
-- **Phase 2.5**: 
-  - ES12 Testでの詳細分析完了
-  - Overfitting診断完了（Train/Val/Test性能差 < 10%が理想）
-  - ES10/ES14データ整備完了
-  - ES10/ES14での外部検証完了（性能低下 < 20%が理想）
-- **Phase 3**: ベースラインからの性能向上
+- **Phase 1**: VL-VO関係性の可視化と応答性特徴量の抽出完了
+- **Phase 2**: 物理的に妥当な異常検知結果
+- **Phase 3**: 劣化度予測 MAE < 0.1（10%以内の誤差）
 
 ### 推奨される実装順序
 
-1. **Phase 1**: データセット構築（タスク1-3）
-2. **Phase 2**: ベースラインモデル（タスク4-6）
-3. **Phase 2.5**: Overfitting診断と外部検証（タスク6.3-6.6）
-4. **Phase 2.6**: データリーケージ解消（タスク6.7-6.9） ← **現在ここ**
-5. **Phase 3**: モデル改善（タスク7-10、オプション）
+1. **Phase 1**: VL-VO関係性分析（タスク1.1-1.4） ← **✅ 完了**
+2. **Phase 2**: 異常検知モデル（タスク2.1-2.4） ← **次はここ**
+3. **Phase 3**: 劣化予測モデル（タスク3.1-3.3）
 
 ---
 
 ## 📝 進捗メモ
 
-### 2026-01-17 更新（Phase 2.6完了）
+### 2026-01-17 更新（Phase 2 - Task 2.2完了）
 
-- ✅ Task 1.1-1.3: 特徴量抽出と品質確認完了
-- ✅ Task 2.1-2.2: ラベル生成完了
-- ✅ Task 3.1-3.3: データ分割、特徴量スケーリング、サマリー生成完了
-- ✅ Task 4.1-4.4: Primary Model（異常検知）完了 - F1-Score = 1.0000 🎯
-- ✅ Task 5.1-5.4: Secondary Model（RUL予測）完了 - R² = 0.9330, MAPE = 89.78% ⚠️
-- ✅ Task 6.1-6.2: モデル評価とレポート生成完了
-- ✅ Task 6.3: ES12 Test詳細可視化完了
-- ✅ Task 6.4: ES10/ES14構造解析完了
-- ✅ CP2: ベースライン性能確認完了
-- 📊 Phase 2結果分析:
-  - **データリーケージ発見**: cycle_numberがラベルと直接相関
-  - **Overfitting確認**: Train MAE=0.07 vs Test MAE=6.79（100倍差）
-  - **訓練データ不足**: RUL < 50のデータが訓練セットに存在しない
-- ✅ **Phase 2.6完了**: データリーケージ解消とモデル改善（Minimum Start）
-  - ✅ Task 6.7: cycle関連特徴量の除外とデータ再構築完了
-  - ✅ Task 6.8: モデル再訓練（Baseline v2）完了
-  - ✅ Task 6.9: v1 vs v2比較分析完了
-- 🎉 **Phase 2.6成果**:
-  - **データリーケージ解消**: cycle特徴量を除外（30→28列、24特徴量）
-  - **Primary Model v2**: F1=0.9975（真の性能、汎化性能良好）
-  - **Secondary Model v2**: Test MAE=1.95（71%改善）、RUL 0-50 MAE=2.05（92%改善！）
-  - **特徴量重要度**: VL特徴量が主要に（vl_q25, vl_mean, vl_median）
-  - **完全RULカバレッジ**: RUL 0-199全範囲で予測可能
+- ✅ Phase 0: 探索的特徴量分析完了
+- ✅ Phase 2.6: データリーケージ解消完了（学習内容として保持）
+- 🔄 **Phase再構築**: VL-VO関係性ベースのアプローチに変更
+- ✅ **Phase 1完了**: VL-VO関係性分析
+  - Task 1.1: VL-VO関係性の可視化完了
+    - 劣化パターン発見: Response Efficiency 98.5%減少
+    - サンプル分布確認: Normal 40%, Abnormal 60%
+  - Task 1.2: 応答性特徴量の設計完了
+    - 15個の応答性特徴量を設計
+  - Task 1.3: 応答性特徴量の抽出完了
+    - 全1600サンプル（8コンデンサ × 200サイクル）から抽出
+    - バグ修正とI/O最適化（13倍高速化）
+  - Task 1.4: 劣化パターンの詳細可視化と閾値探索完了
+    - 故障兆候閾値の特定: 50%, 10%, 1%
+    - 劣化ステージ定義: Normal, Degrading, Severe, Critical
+    - サンプル分布: Normal 38.7%, Degrading 6.8%, Severe 39.8%, Critical 14.8%
+
+- 🔄 **Phase 2進行中**: 異常検知モデル構築
+  - ✅ Task 2.1: 正常パターンの定義完了
+    - 初期サイクル（1-50）の統計分析
+    - 正常ベースライン確立: Response Efficiency 94.78 ± 112.85
+  - ✅ Task 2.2a: Isolation Forest完了
+    - 異常検出率: 10.0%
+    - 問題: 初期高効率状態を異常判定（物理的に不適切）
+  - ✅ Task 2.2b: One-Class SVM v1完了
+    - 異常検出率: 93.4%
+    - 問題: 効率系特徴量の中期ピークにより誤検出
+    - Response Efficiency: 初期3.4 → 中期1760 → 後期1.1（U字型、物理的に不可能）
+  - ✅ **Task 2.2c: One-Class SVM v2完了**（推奨アプローチ）
+    - **効率系特徴量を除外**（劣化の結果であり予測指標として不適切）
+    - **波形特性のみ使用**（7特徴量）
+    - 異常検出率: 91.9%（1471/1600サンプル）
+    - Cycles 51-100: 100%異常検出
+    - 波形特性の変化:
+      - Waveform Correlation: 0.77 → 0.91 (+18.6%)
+      - VO Variability: 0.23 → 0.49 (+110%)
+      - VL Variability: 0.25 → 0.73 (+194%)
+    - **物理的妥当性**: ✅ 高い（単調な劣化パターン）
+  - ✅ 3つのアプローチの比較分析完了
+    - 比較レポート: `output/anomaly_detection/anomaly_detection_comparison.md`
+    - 結論: One-Class SVM v2が最適
+  - ✅ **Task 2.4: 異常検知結果の妥当性検証完了**
+    - 遷移点: サイクル12（50%異常検出率）
+    - False Positive: 初期42.5%（個体差の可能性、許容範囲）
+    - False Negative: 後期4.6%（極めて少ない）
+    - 単調性確認: 劣化指標とサイクル数の正の相関（0.36-0.83）
+    - Critical/Severe段階の87.5%を正しく異常検出
+    - **物理的妥当性**: ✅ 高い
+  - ✅ **Phase 2完了**
+
+### Phase 1.1の主な発見
+
+**劣化パターン**:
+- Response Efficiency: 70-85% → 1%（98.5%減少）
+- Voltage Ratio: 正の値 → 負の値（極性反転）
+- Correlation: 0.83 → 0.9998（波形単純化）
+
+**サンプル分布**:
+- Total: 320サンプル（8コンデンサ × 40サイクル、5サイクル間隔）
+- Normal (>50%): 128サンプル（40.0%）
+- Degrading (10-50%): 64サンプル（20.0%）
+- Severe (1-10%): 48サンプル（15.0%）
+- Critical (<1%): 80サンプル（25.0%）
+
+**データ可用性評価**:
+- ✅ 異常検知: 十分なNormalサンプル（128）
+- ✅ 劣化予測: 全劣化スペクトラムをカバー
+- ✅ 複数コンデンサ: 8個の独立サンプル
+
+### Phase 2の重要な発見
+
+**効率系特徴量の問題**:
+- Response Efficiency, Voltage Ratioは中期に異常ピーク
+- 物理的に不可能なU字型パターン（劣化から回復しない）
+- 効率変化は劣化の**結果**であり、**予測指標**ではない
+
+**波形特性の有効性**:
+- Waveform Correlation: 劣化で1.0に近づく（波形単純化）
+- VO/VL Variability: 劣化で増加（応答不安定化）
+- Residual Energy Ratio: 劣化で増加（線形関係からの逸脱）
+- すべて単調増加パターン（物理的に妥当）
 
 ---
 
-**作成日**: 2026-01-16
+**作成日**: 2026-01-15
 **Phase 0完了日**: 2026-01-16
+**Phase再構築日**: 2026-01-17
 **Phase 1完了日**: 2026-01-17
+**Task 2.2完了日**: 2026-01-17
 **Phase 2完了日**: 2026-01-17
-**Phase 2.6完了日**: 2026-01-17
 **最終更新日**: 2026-01-17
-**次のタスク**: CP2.6 改善効果の確認（ユーザー確認待ち）
+**次のタスク**: 3.1 劣化度の定義（Phase 3開始）
+

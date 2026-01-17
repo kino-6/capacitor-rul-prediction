@@ -143,7 +143,7 @@ uv run pytest tests/property/
 
 ```
 .
-├── README.md                    # このファイル
+├── README.md                    # このファイル（EDAプロジェクト）
 ├── pyproject.toml              # プロジェクト設定
 ├── data/
 │   └── raw/                    # 生データ（ES12.mat）
@@ -153,7 +153,15 @@ uv run pytest tests/property/
 ├── scripts/                    # 分析スクリプト
 ├── src/                        # ソースコード
 ├── tests/                      # テスト
-└── docs/                       # ドキュメント
+├── docs/                       # ドキュメント
+└── rul_modeling/               # 🆕 RUL予測モデル開発
+    ├── README.md               # RULモデリングプロジェクト
+    ├── .kiro/specs/            # Spec-driven development
+    ├── src/                    # モデルソースコード
+    ├── tests/                  # モデルテスト
+    ├── notebooks/              # 実験用ノートブック
+    ├── output/                 # モデル出力
+    └── docs/                   # モデルドキュメント
 ```
 
 ## 🤝 貢献
@@ -174,6 +182,16 @@ MIT License - 詳細は[LICENSE](LICENSE)ファイルを参照
 
 - NASA PCOE（Prognostics Center of Excellence）によるデータセット提供
 - オープンソースコミュニティ
+
+## 🚀 次のステップ: RUL予測モデル開発
+
+EDAの結果を踏まえて、RUL予測モデルの開発を開始します。
+
+**RULモデリングプロジェクト**: [rul_modeling/](rul_modeling/)
+
+- 2段階アプローチ（Primary: 異常検知、Secondary: RUL予測）
+- Spec-driven developmentによる体系的な開発
+- 詳細は [rul_modeling/README.md](rul_modeling/README.md) を参照
 
 ## 📧 連絡先
 
