@@ -399,7 +399,104 @@ VL-VO関係性の劣化検出に基づく、物理的に意味のある異常検
   - ✅ 次サイクル応答性予測モデルの構築完了（Task 3.3）
     - 全特徴量でR² > 0.93（高精度）
   - ✅ 実用的な予測性能の達成
-  - **Phase 3完了 - 全Phase完了！🎉**
+  - **Phase 3完了 - Phase 4へ進む準備完了**
+
+---
+
+## Phase 4: モデル汎化性能検証（ES10/ES14データ）
+
+**目的**: ES12で学習したモデルをES10/ES14データに適用し、汎化性能を評価
+
+### タスク4.1: ES10/ES14データの特徴量抽出
+
+- [ ] 4.1 ES10/ES14データの応答性特徴量抽出
+  - **目的**: ES10/ES14データから同じ特徴量を抽出
+  - **実装内容**:
+    - ES10データ（8コンデンサ × 200サイクル = 1600サンプル）の特徴量抽出
+    - ES14データ（8コンデンサ × 200サイクル = 1600サンプル）の特徴量抽出
+    - ES12と同じResponseFeatureExtractorを使用
+    - 15個の応答性特徴量を抽出
+    - データ構造の確認と比較
+  - 出力: 
+    - `output/features_v3/es10_response_features.csv`
+    - `output/features_v3/es14_response_features.csv`
+  - _Requirements: ES10/ES14データの準備_
+
+### タスク4.2: ES10/ES14データでの異常検知評価
+
+- [ ] 4.2 ES12学習済み異常検知モデルのES10/ES14データでの評価
+  - **目的**: One-Class SVM v2モデルの汎化性能を評価
+  - **実装内容**:
+    - ES12学習済みモデル（`one_class_svm_v2.pkl`）の読み込み
+    - ES10データでの異常検知
+    - ES14データでの異常検知
+    - 異常検出率の比較（ES12 vs ES10 vs ES14）
+    - 劣化パターンの比較分析
+    - False Positive/Negative分析
+  - **評価指標**:
+    - 異常検出率
+    - Training FP（初期サイクル1-10）
+    - Early FP（サイクル11-20）
+    - Late FN（サイクル100+）
+    - 遷移点（50%異常検出率のサイクル）
+  - 出力: 
+    - `output/cross_dataset_validation/es10_anomaly_detection_results.csv`
+    - `output/cross_dataset_validation/es14_anomaly_detection_results.csv`
+    - `output/cross_dataset_validation/cross_dataset_anomaly_comparison.png`
+  - _Requirements: 異常検知モデルの汎化性能評価_
+
+### タスク4.3: ES10/ES14データでの劣化度予測評価
+
+- [ ] 4.3 ES12学習済み劣化予測モデルのES10/ES14データでの評価
+  - **目的**: 劣化度予測モデルと次サイクル応答性予測モデルの汎化性能を評価
+  - **実装内容**:
+    - ES12学習済みモデル（`degradation_predictor.pkl`, `response_predictor.pkl`）の読み込み
+    - ES10/ES14データでの劣化度スコア計算
+    - ES10/ES14データでの劣化度予測
+    - ES10/ES14データでの次サイクル応答性予測
+    - 予測精度の比較（ES12 vs ES10 vs ES14）
+    - データセット間の劣化パターンの違いを分析
+  - **評価指標**:
+    - 劣化度予測: MAE, RMSE, R²
+    - 次サイクル応答性予測: 各特徴量のMAE, R²
+    - データセット間の相関分析
+  - 出力: 
+    - `output/cross_dataset_validation/es10_degradation_prediction_results.csv`
+    - `output/cross_dataset_validation/es14_degradation_prediction_results.csv`
+    - `output/cross_dataset_validation/cross_dataset_prediction_comparison.png`
+  - _Requirements: 劣化予測モデルの汎化性能評価_
+
+### タスク4.4: データセット間の違いの分析
+
+- [ ] 4.4 ES10/ES12/ES14データセット間の特性比較
+  - **目的**: データセット間の違いを理解し、モデルの適用範囲を明確化
+  - **実装内容**:
+    - 各データセットの基本統計量の比較
+    - 劣化パターンの比較（Response Efficiency, Waveform Correlation等）
+    - 劣化速度の比較（サイクルあたりの変化率）
+    - 初期状態の比較（サイクル1-10の平均値）
+    - 最終状態の比較（サイクル190-200の平均値）
+    - データセット間の相関分析
+    - モデル性能の違いの原因分析
+  - **分析項目**:
+    - コンデンサタイプの違い
+    - ストレス条件の違い
+    - 劣化メカニズムの違い
+    - モデルの適用可能性
+  - 出力: 
+    - `output/cross_dataset_validation/dataset_comparison_report.md`
+    - `output/cross_dataset_validation/dataset_characteristics_comparison.png`
+  - _Requirements: データセット間の違いの理解_
+
+### チェックポイント4: モデル汎化性能検証完了
+
+- [ ] CP4: モデル汎化性能検証の完了確認
+  - ES10/ES14データの特徴量抽出完了
+  - 異常検知モデルの汎化性能評価完了
+  - 劣化予測モデルの汎化性能評価完了
+  - データセット間の違いの分析完了
+  - モデルの適用範囲の明確化
+  - ユーザーに確認を求める
 
 ---
 
@@ -425,20 +522,28 @@ Test:  C7-C8 の 全サイクル  (2個 × 200サイクル = 400サンプル)
 - **Phase 1**: VL-VO関係性の可視化と応答性特徴量の抽出完了
 - **Phase 2**: 物理的に妥当な異常検知結果
 - **Phase 3**: 劣化度予測 MAE < 0.1（10%以内の誤差）
+- **Phase 4**: ES10/ES14データでの汎化性能確認（MAE < 0.15許容）
 
 ### 推奨される実装順序
 
 1. **Phase 1**: VL-VO関係性分析（タスク1.1-1.4） ← **✅ 完了**
 2. **Phase 2**: 異常検知モデル（タスク2.1-2.4） ← **✅ 完了**
 3. **Phase 3**: 劣化予測モデル（タスク3.1-3.3） ← **✅ 完了**
-
-**🎉 全Phase完了！**
+4. **Phase 4**: モデル汎化性能検証（タスク4.1-4.4） ← **次はここ**
 
 ---
 
 ## 📝 進捗メモ
 
-### 2026-01-18 更新（Phase 3完了 - プロジェクト完了🎉）
+### 2026-01-18 更新（Phase 4開始 - ES10/ES14データ検証）
+
+- 🔄 **Phase 4開始**: モデル汎化性能検証
+  - ES10/ES14データでES12学習済みモデルを評価
+  - 異常検知モデルの汎化性能確認
+  - 劣化予測モデルの汎化性能確認
+  - データセット間の違いを分析
+
+### 2026-01-18 更新（Phase 3完了）
 
 - ✅ **Phase 3完了**: 劣化予測モデル構築
   - ✅ Task 3.1: 劣化度スコアの定義完了
@@ -549,6 +654,7 @@ Test:  C7-C8 の 全サイクル  (2個 × 200サイクル = 400サンプル)
 **Task 2.2完了日**: 2026-01-17
 **Phase 2完了日**: 2026-01-17
 **Phase 3完了日**: 2026-01-18
-**プロジェクト完了日**: 2026-01-18 🎉
+**Phase 4開始日**: 2026-01-18
 **最終更新日**: 2026-01-18
+**次のタスク**: 4.1 ES10/ES14データの特徴量抽出（Phase 4開始）
 
