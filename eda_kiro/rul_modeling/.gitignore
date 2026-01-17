@@ -30,20 +30,10 @@ env/
 .ipynb_checkpoints
 *.ipynb
 
-# Model files
-*.pkl
-*.h5
-*.pt
-*.pth
-
-# Data files
-*.csv
+# Large data files (keep models and processed data)
+# Exclude raw data files only
 *.mat
 *.hdf5
-
-# Output
-output/
-!output/.gitkeep
 
 # IDE
 .vscode/
@@ -69,3 +59,6 @@ htmlcov/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+
+# Keep important output files for reproducibility
+# Models, datasets, and evaluation results are included

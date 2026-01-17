@@ -1,0 +1,63 @@
+================================================================================
+FEATURE QUALITY REPORT
+================================================================================
+Dataset: output/features/es12_features.csv
+Total samples: 1600
+Total features: 28
+
+✓ No missing values found in any column
+⚠ Found significant outliers in 13 columns:
+  - vl_cv: 188 outliers (11.75%)
+  - vl_max: 221 outliers (13.81%)
+  - vl_mean: 343 outliers (21.44%)
+  - vl_median: 343 outliers (21.44%)
+  - vl_min: 560 outliers (35.00%)
+  - vl_q25: 340 outliers (21.25%)
+  - vl_q75: 343 outliers (21.44%)
+  - vl_range: 99 outliers (6.19%)
+  - vl_trend: 170 outliers (10.62%)
+  - vo_std: 164 outliers (10.25%)
+  - vo_trend: 328 outliers (20.50%)
+  - voltage_ratio: 344 outliers (21.50%)
+  - voltage_ratio_std: 391 outliers (24.44%)
+
+Outlier Summary:
+  - Total outliers (IQR method): 4064
+  - Total outliers (Z-score method): 350
+
+✓ Generated statistical summary for 24 features
+
+Samples per capacitor:
+  - ES12C1: 200 cycles
+  - ES12C2: 200 cycles
+  - ES12C3: 200 cycles
+  - ES12C4: 200 cycles
+  - ES12C5: 200 cycles
+  - ES12C6: 200 cycles
+  - ES12C7: 200 cycles
+  - ES12C8: 200 cycles
+
+Cycle range per capacitor:
+  - ES12C1: cycles 1 to 200
+  - ES12C2: cycles 1 to 200
+  - ES12C3: cycles 1 to 200
+  - ES12C4: cycles 1 to 200
+  - ES12C5: cycles 1 to 200
+  - ES12C6: cycles 1 to 200
+  - ES12C7: cycles 1 to 200
+  - ES12C8: cycles 1 to 200
+
+Feature value ranges (first 10 features):
+  - response_efficiency: [0.3420, 1.7059]
+  - signal_attenuation: [-0.6581, 0.3174]
+  - vl_cv: [-64.7033, 62.6291]
+  - vl_max: [-2.5777, 2.3455]
+  - vl_mean: [-3.0637, 1.9424]
+  - vl_median: [-3.0652, 1.9407]
+  - vl_min: [-3.5466, 1.4876]
+  - vl_q25: [-3.1786, 1.8285]
+  - vl_q75: [-2.9537, 2.0585]
+  - vl_range: [0.5662, 3.7294]
+
+⚠ Data quality issues found:
+  - Significant outliers in 13 columns
