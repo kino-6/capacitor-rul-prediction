@@ -43,20 +43,23 @@ def extract_dataset_features(dataset_name):
     with h5py.File(str(data_path), 'r') as f:
         print(f"\nデータ構造:")
         for key in f.keys():
-            print(f"  - {key}: {type(f[key])}")
+            if not key.startswith('#'):
+                print(f"  - {key}: {type(f[key])}")
         
         # データセット名を確認
-        if dataset_name in f:
-            data = f[dataset_name]
-        else:
-            # 最初のキーを使用
-            data_keys = list(f.keys())
-            if len(data_keys) > 0:
-                data = f[data_keys[0]]
-                print(f"  使用するキー: {data_keys[0]}")
-            else:
-                print(f"❌ エラー: データが見つかりません")
-                return None
+        if dataset_name not in f:
+            print(f"❌ エラー: {dataset_name}キーが見つかりません")
+            return None
+        
+        data_group = f[dataset_name]
+        
+        # Transient_Dataにアクセス
+        if 'Transient_Data' not in data_group:
+            print(f"❌ エラー: Transient_Dataが見つかりません")
+            return None
+        
+        transient_data = data_group['Transient_Data']
+        print(f"\nTransient_Dataのキー: {list(transient_data.keys())}")
         
         # ResponseFeatureExtractorの初期化
         extractor = ResponseFeatureExtractor()
@@ -66,55 +69,67 @@ def extract_dataset_features(dataset_name):
         
         all_features = []
         
-        # データ構造を確認
-        print(f"  データ形状: {data.shape}")
+        # コンデンサごとに処理
+        capacitor_keys = [k for k in transient_data.keys() if k.startswith(dataset_name)]
+        n_capacitors = len(capacitor_keys)
         
-        # ES10/ES14のデータ構造: (n_capacitors, 1)
-        n_capacitors = data.shape[0]
         print(f"  コンデンサ数: {n_capacitors}")
         
-        for cap_idx in range(n_capacitors):
-            cap_id = f"{dataset_name}C{cap_idx + 1}"
+        for cap_key in sorted(capacitor_keys):
+            cap_data = transient_data[cap_key]
             
-            # コンデンサデータへの参照を取得
-            cap_ref = data[cap_idx, 0]
-            cap_data = f[cap_ref]
+            # VLとVOを取得（2D配列: samples × cycles）
+            if 'VL' not in cap_data or 'VO' not in cap_data:
+                print(f"  ⚠️ {cap_key}: VLまたはVOが見つかりません")
+                continue
             
-            # サイクルデータへのアクセス
-            if 'cycle' in cap_data:
-                cycles_ref = cap_data['cycle']
-                n_cycles = cycles_ref.shape[1]
+            vl_array = cap_data['VL'][:]  # (samples, cycles)
+            vo_array = cap_data['VO'][:]  # (samples, cycles)
+            
+            n_samples, n_cycles = vl_array.shape
+            
+            print(f"  {cap_key}: {n_cycles}サイクル × {n_samples}サンプル")
+            
+            # 各サイクルを処理
+            for cycle_idx in range(n_cycles):
+                vl = vl_array[:, cycle_idx]
+                vo = vo_array[:, cycle_idx]
                 
-                print(f"  {cap_id}: {n_cycles}サイクル")
+                # NaN値を除去（ES10/ES14にはNaNが含まれる）
+                valid_mask = ~(np.isnan(vl) | np.isnan(vo))
+                vl = vl[valid_mask]
+                vo = vo[valid_mask]
                 
-                for cycle_idx in range(n_cycles):
-                    cycle_ref = cycles_ref[0, cycle_idx]
-                    cycle_data = f[cycle_ref]
-                    
-                    # VLとVOの取得
-                    if 'VL' in cycle_data and 'VO' in cycle_data:
-                        vl_ref = cycle_data['VL'][0, 0]
-                        vo_ref = cycle_data['VO'][0, 0]
-                        
-                        vl = f[vl_ref][()].flatten()
-                        vo = f[vo_ref][()].flatten()
-                        
-                        # 特徴量抽出
-                        features = extractor.extract_features(
-                            vl=vl,
-                            vo=vo,
-                            capacitor_id=cap_id,
-                            cycle=cycle_idx + 1,
-                            include_advanced=True
-                        )
-                        
-                        features['capacitor_id'] = cap_id
-                        features['cycle'] = cycle_idx + 1
-                        all_features.append(features)
-                    
-                    # 進捗表示（10サイクルごと）
-                    if (cycle_idx + 1) % 50 == 0:
-                        print(f"    {cap_id}: {cycle_idx + 1}/{n_cycles}サイクル完了")
+                # 有効なデータが少なすぎる場合はスキップ
+                if len(vl) < 100:
+                    print(f"    ⚠️ {cap_key} Cycle {cycle_idx + 1}: 有効データ不足 ({len(vl)}サンプル)")
+                    continue
+                
+                # ES10/ES14は非常に大きな配列（75,826サンプル）なので、
+                # 計算効率のためにダウンサンプリング
+                # ES12と同程度のサンプル数（~1000）にする
+                if len(vl) > 5000:
+                    # 均等にサンプリング
+                    downsample_factor = len(vl) // 1000
+                    vl = vl[::downsample_factor]
+                    vo = vo[::downsample_factor]
+                
+                # 特徴量抽出
+                features = extractor.extract_features(
+                    vl=vl,
+                    vo=vo,
+                    capacitor_id=cap_key,
+                    cycle=cycle_idx + 1,
+                    include_advanced=True
+                )
+                
+                features['capacitor_id'] = cap_key
+                features['cycle'] = cycle_idx + 1
+                all_features.append(features)
+                
+                # 進捗表示（50サイクルごと）
+                if (cycle_idx + 1) % 50 == 0:
+                    print(f"    {cap_key}: {cycle_idx + 1}/{n_cycles}サイクル完了")
     
     features_df = pd.DataFrame(all_features)
     

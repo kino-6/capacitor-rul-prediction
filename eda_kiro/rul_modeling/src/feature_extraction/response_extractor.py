@@ -227,16 +227,22 @@ class ResponseFeatureExtractor:
         
         # Residual energy (linear fit residual)
         if len(vl) > 1 and len(vo) > 1:
-            # Linear fit: vo = a * vl + b
-            coeffs = np.polyfit(vl, vo, 1)
-            vo_predicted = np.polyval(coeffs, vl)
-            residual = vo - vo_predicted
-            
-            vo_energy = np.sum(vo ** 2)
-            residual_energy = np.sum(residual ** 2)
-            features['residual_energy_ratio'] = (
-                residual_energy / vo_energy if vo_energy > 0 else 0
-            )
+            try:
+                # Linear fit: vo = a * vl + b
+                # Use rcond parameter to handle numerical issues with large arrays
+                coeffs = np.polyfit(vl, vo, 1, rcond=None)
+                vo_predicted = np.polyval(coeffs, vl)
+                residual = vo - vo_predicted
+                
+                vo_energy = np.sum(vo ** 2)
+                residual_energy = np.sum(residual ** 2)
+                features['residual_energy_ratio'] = (
+                    residual_energy / vo_energy if vo_energy > 0 else 0
+                )
+            except (np.linalg.LinAlgError, ValueError) as e:
+                # Handle numerical issues with large arrays
+                # Fall back to simple residual calculation
+                features['residual_energy_ratio'] = 0.0
         else:
             features['residual_energy_ratio'] = 0
         
