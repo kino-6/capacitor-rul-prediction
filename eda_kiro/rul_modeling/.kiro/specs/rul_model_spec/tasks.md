@@ -762,6 +762,110 @@ Test:  C7-C8 の 全サイクル  (2個 × 200サイクル = 400サンプル)
 
 ---
 
+---
+
+## Phase 6: 誤報率削減（False Positive Reduction）
+
+**目的**: v3モデルの誤報率を41.4%から10%以下に削減
+
+**背景**:
+- v3 (Degradation-based): FP Rate = 41.4%（251個中104個を誤報）
+- 実用レベル: FP Rate < 10%
+- 参照: `docs/false_positive_reduction_strategies.md`
+
+### タスク6.1: ROC曲線分析と閾値最適化
+
+- [ ] 6.1 ROC曲線分析による最適閾値の選択
+  - **目的**: 現在の閾値（decision_score < 0）を最適化
+  - **実装内容**:
+    - ROC曲線の描画（False Positive Rate vs True Positive Rate）
+    - AUC（Area Under Curve）の計算
+    - 複数の閾値候補での性能評価
+    - 目標: FPR < 10%となる閾値を選択
+    - Precision-Recall曲線も描画（不均衡データ対応）
+    - 最適閾値での混同行列と評価指標の算出
+  - **期待される効果**:
+    - FPR: 41.4% → 10-20%
+    - Recall: 100% → 90-95%（若干の見逃しは許容）
+  - **評価指標**:
+    - ROC-AUC
+    - 各閾値でのFPR, TPR, Precision, Recall, F1-Score
+    - 最適閾値の選定理由
+  - 出力: 
+    - `output/threshold_optimization/roc_curve_analysis.png`
+    - `output/threshold_optimization/optimal_threshold_report.md`
+    - `scripts/optimize_threshold_roc.py`
+  - _Status: 未着手_
+  - _Requirements: 閾値最適化_
+
+### タスク6.2: アンサンブルアプローチの実装
+
+- [ ] 6.2 異常検知 + 劣化度予測のアンサンブルモデル
+  - **目的**: 2つのモデルを組み合わせて誤報を削減
+  - **実装内容**:
+    - 条件1: 異常検知モデルが異常と判定（anomaly_score < threshold）
+    - 条件2: 劣化度予測モデルが深刻な劣化と判定（predicted_degradation >= 0.50）
+    - 最終判定: 両方の条件を満たす場合のみアラート
+    - 複数の組み合わせパターンを評価:
+      - AND条件（両方が異常）
+      - OR条件（どちらかが異常）
+      - 重み付け投票（confidence score）
+    - 劣化度予測モデルの高精度（R² = 0.9996）を活用
+  - **期待される効果**:
+    - FPR: 41.4% → 5-15%
+    - 劣化度予測の高精度により誤報を大幅削減
+  - **評価指標**:
+    - 各組み合わせパターンでのFPR, Recall, F1-Score
+    - 混同行列の比較
+    - 最適な組み合わせの選定
+  - 出力: 
+    - `output/ensemble/ensemble_model_results.png`
+    - `output/ensemble/ensemble_comparison_report.md`
+    - `scripts/build_ensemble_model.py`
+  - _Status: 未着手_
+  - _Requirements: アンサンブルモデル_
+
+### タスク6.3: 段階的アラートシステムの設計
+
+- [ ] 6.3 劣化度スコアベースの4段階アラートシステム
+  - **目的**: 実用的な段階的警告システムの構築
+  - **実装内容**:
+    - アラートレベルの定義:
+      - INFO: degradation_score < 0.25（正常範囲、アラートなし）
+      - WARNING: 0.25 <= degradation_score < 0.50（継続監視）
+      - ALERT: 0.50 <= degradation_score < 0.75（保全計画立案）
+      - CRITICAL: degradation_score >= 0.75（即時対応）
+    - 異常検知モデルを補助的に使用（WARNINGレベルの判定に活用）
+    - 各レベルでの推奨アクションの定義
+    - 運用シミュレーション（工場での1ヶ月運用を想定）
+    - アラート頻度の分析
+  - **期待される効果**:
+    - 誤報の定義が変わる（段階的な警告）
+    - 現場が適切に対応可能
+    - 劣化度予測モデルの高精度を主軸に使用
+  - **評価指標**:
+    - 各アラートレベルの発生頻度
+    - 実際の劣化状態との対応
+    - 運用コストの試算（改善後）
+  - 出力: 
+    - `output/alert_system/staged_alert_system_design.md`
+    - `output/alert_system/alert_frequency_analysis.png`
+    - `scripts/design_staged_alert_system.py`
+  - _Status: 未着手_
+  - _Requirements: 実用的なアラートシステム_
+
+### チェックポイント6: 誤報率削減完了
+
+- [ ] CP6: 誤報率削減の完了確認
+  - ✅ ROC曲線分析と閾値最適化完了（Task 6.1）
+  - ✅ アンサンブルアプローチの実装完了（Task 6.2）
+  - ✅ 段階的アラートシステムの設計完了（Task 6.3）
+  - ✅ 目標達成: FPR < 10%
+  - ✅ 実用化に向けた準備完了
+  - **Phase 6完了 - 実用化可能なモデル完成**
+
+---
+
 **作成日**: 2026-01-15
 **Phase 0完了日**: 2026-01-16
 **Phase再構築日**: 2026-01-17
@@ -772,7 +876,8 @@ Test:  C7-C8 の 全サイクル  (2個 × 200サイクル = 400サンプル)
 **Phase 4開始日**: 2026-01-18
 **Phase 4完了日**: 2026-01-18
 **Phase 5完了日**: 2026-01-18
-**プロジェクト完了日**: 2026-01-18
-**最終更新日**: 2026-01-18
-**ステータス**: 完了 🎉
+**Phase 6開始日**: 2026-01-19
+**プロジェクト完了日**: 2026-01-18（Phase 5まで）
+**最終更新日**: 2026-01-19
+**ステータス**: Phase 6進行中（誤報率削減）
 
