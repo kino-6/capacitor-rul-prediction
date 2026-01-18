@@ -1,0 +1,10 @@
+Degradation Score-Based Labeling
+Normal Threshold: < 0.25
+Anomaly Threshold: >= 0.5
+
+Accuracy:  0.7150
+Precision: 0.5698
+Recall:    1.0000
+F1-Score:  0.7260
+False Positive Rate: 45.8%
+True Negative Rate:  54.2%
