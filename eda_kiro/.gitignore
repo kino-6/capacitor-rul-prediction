@@ -64,6 +64,12 @@ output/reports/
 test_output/
 *.log
 
+# Temporary analysis files
+warning_analysis.py
+warning_config.yaml
+test_output_with_warnings.log
+test_warnings_analysis.log
+
 # UV
 uv.lock
 

@@ -1,8 +1,36 @@
-# ES12 Capacitor Degradation Analysis
+# NASA PCOE コンデンサ劣化予測プロジェクト
 
-NASA PCOE Dataset No.12 (ES12) のコンデンサ劣化分析プロジェクト
+NASA PCOE Dataset No.12 (ES12) を用いたコンデンサ劣化予測システムの開発
 
-## 🎯 プロジェクト概要
+---
+
+## 🚀 メインプロジェクト: RUL予測モデル
+
+**本プロジェクトのメイン成果物は [rul_modeling/](rul_modeling/) ディレクトリにあります。**
+
+### 📊 主要な成果
+
+- **異常検知**: Training FP 5.0%, Late FN 5.2%
+- **劣化度予測**: Test MAE 0.0036, R² 0.9996
+- **誤報率削減**: FPR 41.4% → 13.1% (68.2%改善)
+- **段階的アラートシステム**: 4レベル (INFO/WARNING/ALERT/CRITICAL)
+
+### 📖 詳細ドキュメント
+
+**👉 [rul_modeling/README.md](rul_modeling/README.md) - メインプロジェクトの入り口**
+
+- [最終プロジェクトレポート](rul_modeling/docs/FINAL_PROJECT_REPORT.md)
+- [統合デモスクリプト](rul_modeling/scripts/end_to_end_inference_demo.py)
+- [タスク管理](rul_modeling/.kiro/specs/rul_model_spec/tasks.md)
+
+---
+
+## 📁 このディレクトリについて
+
+このトップレベルディレクトリには、初期の探索的データ分析（EDA）の成果物が含まれています。
+**実用的なRUL予測システムは [rul_modeling/](rul_modeling/) を参照してください。**
+
+## 🎯 初期EDAの概要
 
 本プロジェクトは、NASA PCOE（Prognostics Center of Excellence）が提供するコンデンサ電気ストレスデータセット（ES12）を用いて、**同一入力条件下での出力応答の変化（劣化）**を分析します。
 
@@ -183,20 +211,24 @@ MIT License - 詳細は[LICENSE](LICENSE)ファイルを参照
 - NASA PCOE（Prognostics Center of Excellence）によるデータセット提供
 - オープンソースコミュニティ
 
-## 🚀 次のステップ: RUL予測モデル開発
-
-EDAの結果を踏まえて、RUL予測モデルの開発を開始します。
-
-**RULモデリングプロジェクト**: [rul_modeling/](rul_modeling/)
-
-- 2段階アプローチ（Primary: 異常検知、Secondary: RUL予測）
-- Spec-driven developmentによる体系的な開発
-- 詳細は [rul_modeling/README.md](rul_modeling/README.md) を参照
-
 ## 📧 連絡先
 
 問題や質問がある場合は、GitHubのIssueトラッカーで報告してください。
 
 ---
 
-**最終更新**: 2026-01-15
+## 🗂️ アーカイブファイルについて
+
+以下のファイルは過去の開発・デバッグ過程で生成された一時ファイルです（参考用に保持）:
+
+- `warning_analysis.py` - テスト警告分析スクリプト（デバッグ用）
+- `warning_config.yaml` - 警告管理設定（デバッグ用）
+- `test_output_with_warnings.log` - 旧テストログ
+- `test_warnings_analysis.log` - 旧警告分析ログ
+- `test_output/` - 一時テスト出力
+
+これらのファイルは現在のプロジェクトでは使用されていません。
+
+---
+
+**最終更新**: 2026-01-28
