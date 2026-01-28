@@ -33,20 +33,20 @@ The implementation follows a bottom-up approach: data handling → feature extra
     - Test data structure integrity
     - _Requirements: 8.1_
 
-- [ ] 3. Implement feature extraction
-  - [ ] 3.1 Create FeatureExtractor class
+- [x] 3. Implement feature extraction
+  - [x] 3.1 Create FeatureExtractor class
     - Implement `extract_responsiveness_features()` for 15 existing features
     - Implement `extract_statistical_features()` for mean, std, skewness, kurtosis, min, max
     - Implement `extract_frequency_features()` using FFT for spectral analysis
     - Implement `extract_trend_features()` for linear trends and acceleration
     - _Requirements: 3.1, 3.2_
   
-  - [ ] 3.2 Implement rolling window feature extraction
+  - [x] 3.2 Implement rolling window feature extraction
     - Write `extract_rolling_features()` for rolling mean, std, min, max
     - Handle edge cases for early cycles with insufficient history
     - _Requirements: 3.3_
   
-  - [ ] 3.3 Implement feature normalization
+  - [x] 3.3 Implement feature normalization
     - Write `normalize_features()` with capacitor-specific scalers
     - Support StandardScaler and MinMaxScaler
     - Implement fallback to global scaler when capacitor-specific unavailable

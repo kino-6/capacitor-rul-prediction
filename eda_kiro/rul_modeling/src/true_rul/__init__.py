@@ -9,6 +9,8 @@ __version__ = "0.2.0"
 
 from .data_structures import CycleData, CapacitorData, PredictionResult, TrainingDataset
 from .data_loader import DataLoader, load_es12_data
+from .feature_extractor import FeatureExtractor
+from .feature_normalizer import FeatureNormalizer, normalize_features
 
 __all__ = [
     "CycleData",
@@ -17,4 +19,7 @@ __all__ = [
     "TrainingDataset",
     "DataLoader",
     "load_es12_data",
+    "FeatureExtractor",
+    "FeatureNormalizer",
+    "normalize_features",
 ]
