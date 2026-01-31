@@ -97,14 +97,9 @@ class FeatureExtractor:
         trend_features = self.extract_trend_features(cycle)
         features.update(trend_features)
         
-        # 5. Rolling features (10 features) - new (if history available)
-        if history is not None and len(history) > 0:
-            rolling_features = self.extract_rolling_features(cycle, history)
-            features.update(rolling_features)
-        else:
-            # Fill with zeros if no history
-            rolling_features = self._get_empty_rolling_features()
-            features.update(rolling_features)
+        # 5. Rolling features (10 features) - always include (fill with zeros if no history)
+        rolling_features = self.extract_rolling_features(cycle, history)
+        features.update(rolling_features)
         
         return features
     
@@ -359,19 +354,23 @@ class FeatureExtractor:
     def extract_rolling_features(
         self,
         current_cycle: CycleData,
-        history: List[CycleData]
+        history: Optional[List[CycleData]]
     ) -> Dict[str, float]:
         """
         Extract rolling window features from cycle history
         
         Args:
             current_cycle: Current cycle
-            history: Previous cycles (ordered)
+            history: Previous cycles (ordered) - can be None or empty
             
         Returns:
             Dictionary of rolling features (10 features)
         """
         features = {}
+        
+        # Handle case when no history is available
+        if history is None or len(history) == 0:
+            return self._get_empty_rolling_features()
         
         # Get window of previous cycles
         window_size = min(self.rolling_window, len(history))

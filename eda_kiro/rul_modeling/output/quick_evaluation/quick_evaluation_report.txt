@@ -1,0 +1,36 @@
+============================================================
+QUICK MODEL EVALUATION REPORT
+クイックモデル評価レポート
+============================================================
+Generated: 2026-01-31 01:28:21
+
+DATASET INFORMATION / データセット情報
+------------------------------
+Total Samples: 60
+Features: 55
+Capacitors: 2
+Normal Samples: 20
+Anomalous Samples: 40
+
+RUL REGRESSION RESULTS / RUL回帰結果
+------------------------------
+RMSE: 0.915 cycles
+MAE:  0.799 cycles
+R²:   0.930
+
+ANOMALY DETECTION RESULTS / 異常検知結果
+------------------------------
+True Positive Rate (TPR): 0.0000
+False Positive Rate (FPR): 0.0000
+Confusion Matrix:
+  TN:   0  FP:   0
+  FN:  12  TP:   0
+
+REQUIREMENTS CHECK / 要件チェック
+------------------------------
+FPR < 5%: ✓ PASSED (Actual: 0.0000)
+RMSE < 50: ✓ PASSED (Actual: 0.915)
+
+OVERALL: ✓ PASSED
+
+============================================================

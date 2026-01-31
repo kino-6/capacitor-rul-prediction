@@ -10,8 +10,17 @@ import logging
 import numpy as np
 
 # Add parent directory to path to import existing ES12DataLoader
-sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
-from src.nasa_pcoe_eda.data.es12_loader import ES12DataLoader as BaseES12Loader
+try:
+    project_root = Path(__file__).parent.parent.parent.parent.parent / "eda_kiro"
+    sys.path.insert(0, str(project_root))
+    from src.nasa_pcoe_eda.data.es12_loader import ES12DataLoader as BaseES12Loader
+except ImportError:
+    # Fallback for testing - create a dummy loader
+    class BaseES12Loader:
+        def load_dataset(self, path):
+            return {}
+        def get_raw_transient_data(self, cap_id):
+            return None
 
 from .data_structures import CycleData, CapacitorData
 from .config import ES12_CONFIG

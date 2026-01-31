@@ -55,10 +55,9 @@ class ResponseFeatureExtractor:
         features.update(self._extract_delay_features(vl, vo))
         
         # Deviation features (require initial stats)
-        if capacitor_id in self.initial_stats:
-            features.update(self._extract_deviation_features(
-                features, capacitor_id
-            ))
+        features.update(self._extract_deviation_features(
+            features, capacitor_id
+        ))
         
         # Advanced features (optional)
         if include_advanced:
@@ -174,21 +173,34 @@ class ResponseFeatureExtractor:
         """Extract deviation from initial state features."""
         features = {}
         
-        initial = self.initial_stats[capacitor_id]
-        
-        # Check if initial stats are still lists (not yet averaged)
-        # This happens during cycles 1-10 before averaging is complete
-        if isinstance(initial['response_efficiency'], list):
-            # Return zeros for deviation features during initial cycles
+        # If no initial stats yet, return zeros for first cycle
+        if capacitor_id not in self.initial_stats:
             features['efficiency_degradation_rate'] = 0.0
             features['voltage_ratio_deviation'] = 0.0
             features['correlation_shift'] = 0.0
             features['peak_voltage_ratio_deviation'] = 0.0
             return features
         
+        initial = self.initial_stats[capacitor_id]
+        
+        # Check if initial stats are still lists (not yet averaged)
+        # This happens during cycles 1-10 before averaging is complete
+        if isinstance(initial['response_efficiency'], list):
+            # Use current values as baseline for early cycles
+            # This ensures consistent feature count from cycle 1
+            initial_eff = np.mean(initial['response_efficiency']) if initial['response_efficiency'] else current_features['response_efficiency']
+            initial_vr = np.mean(initial['voltage_ratio']) if initial['voltage_ratio'] else current_features['voltage_ratio']
+            initial_corr = np.mean(initial['waveform_correlation']) if initial['waveform_correlation'] else current_features['waveform_correlation']
+            initial_pvr = np.mean(initial['peak_voltage_ratio']) if initial['peak_voltage_ratio'] else current_features['peak_voltage_ratio']
+        else:
+            # Use averaged initial stats
+            initial_eff = initial['response_efficiency']
+            initial_vr = initial['voltage_ratio']
+            initial_corr = initial['waveform_correlation']
+            initial_pvr = initial['peak_voltage_ratio']
+        
         # Efficiency degradation rate
         current_eff = current_features['response_efficiency']
-        initial_eff = initial['response_efficiency']
         features['efficiency_degradation_rate'] = (
             (initial_eff - current_eff) / initial_eff 
             if initial_eff > 0 else 0
@@ -196,7 +208,6 @@ class ResponseFeatureExtractor:
         
         # Voltage ratio deviation
         current_vr = current_features['voltage_ratio']
-        initial_vr = initial['voltage_ratio']
         features['voltage_ratio_deviation'] = (
             abs(current_vr - initial_vr) / abs(initial_vr)
             if initial_vr != 0 else 0
@@ -204,12 +215,10 @@ class ResponseFeatureExtractor:
         
         # Correlation shift
         current_corr = current_features['waveform_correlation']
-        initial_corr = initial['waveform_correlation']
         features['correlation_shift'] = current_corr - initial_corr
         
         # Peak voltage ratio deviation
         current_pvr = current_features['peak_voltage_ratio']
-        initial_pvr = initial['peak_voltage_ratio']
         features['peak_voltage_ratio_deviation'] = (
             abs(current_pvr - initial_pvr) / abs(initial_pvr)
             if initial_pvr != 0 else 0
@@ -271,15 +280,18 @@ class ResponseFeatureExtractor:
             }
         
         stats = self.initial_stats[capacitor_id]
-        stats['response_efficiency'].append(features['response_efficiency'])
-        stats['voltage_ratio'].append(features['voltage_ratio'])
-        stats['waveform_correlation'].append(features['waveform_correlation'])
-        stats['peak_voltage_ratio'].append(features['peak_voltage_ratio'])
         
-        # After 10 cycles, compute averages
-        if len(stats['response_efficiency']) == 10:
-            for key in stats:
-                stats[key] = np.mean(stats[key])
+        # Only append if we haven't averaged yet (still lists)
+        if isinstance(stats['response_efficiency'], list):
+            stats['response_efficiency'].append(features['response_efficiency'])
+            stats['voltage_ratio'].append(features['voltage_ratio'])
+            stats['waveform_correlation'].append(features['waveform_correlation'])
+            stats['peak_voltage_ratio'].append(features['peak_voltage_ratio'])
+            
+            # After 10 cycles, compute averages
+            if len(stats['response_efficiency']) == 10:
+                for key in stats:
+                    stats[key] = np.mean(stats[key])
     
     def get_feature_names(self, include_advanced: bool = False) -> list:
         """Get list of feature names."""

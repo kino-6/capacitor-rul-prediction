@@ -1,0 +1,69 @@
+{
+  "rul_metrics": {
+    "train_rmse": 1.5087744709563071,
+    "train_mae": 1.1528315115552719,
+    "train_r2": 0.9993170628053073,
+    "val_rmse": 11.79820680909712,
+    "val_mae": 9.12616205561716,
+    "val_r2": 0.9582396508182027,
+    "test_rmse": 12.144067943319392,
+    "test_mae": 9.49320209940765,
+    "test_r2": 0.9557553780208632
+  },
+  "anomaly_metrics": {
+    "train_fpr": 0.06,
+    "train_tpr": 0.0,
+    "train_f1": 0.0,
+    "train_precision": 0.0,
+    "train_recall": 0.0,
+    "train_accuracy": 0.047,
+    "train_tp": 0,
+    "train_fp": 3,
+    "train_tn": 47,
+    "train_fn": 950,
+    "val_fpr": 0.0,
+    "val_tpr": 0.0,
+    "val_f1": 0.0,
+    "val_precision": 0.0,
+    "val_recall": 0.0,
+    "val_accuracy": 0.05,
+    "val_tp": 0,
+    "val_fp": 0,
+    "val_tn": 10,
+    "val_fn": 190,
+    "test_fpr": 0.0,
+    "test_tpr": 0.0,
+    "test_f1": 0.0,
+    "test_precision": 0.0,
+    "test_recall": 0.0,
+    "test_accuracy": 0.05,
+    "test_tp": 0,
+    "test_fp": 0,
+    "test_tn": 20,
+    "test_fn": 380
+  },
+  "feature_importance": {
+    "top_10_features": {
+      "feature_37": 0.12290667081082189,
+      "feature_8": 0.11138463257000673,
+      "feature_9": 0.07342884003274204,
+      "feature_50": 0.05969549712210468,
+      "feature_24": 0.05118246932547792,
+      "feature_11": 0.04359517072861855,
+      "feature_51": 0.030953449407641713,
+      "feature_47": 0.029702527411868497,
+      "feature_44": 0.027673406451592872,
+      "feature_31": 0.02094442744359544
+    },
+    "total_features": 55
+  },
+  "shap_analysis": {
+    "sample_size": 10,
+    "shap_values_shape": [
+      10,
+      55
+    ],
+    "mean_absolute_shap": 1.7426289319992065,
+    "message": "SHAP values computed from XGBoost model in ensemble"
+  }
+}
