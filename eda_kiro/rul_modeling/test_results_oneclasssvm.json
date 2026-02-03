@@ -1,0 +1,151 @@
+{
+  "timestamp": 1770096842.845106,
+  "config": {
+    "cv_folds": 4,
+    "cv_stratified": true,
+    "cv_shuffle": true,
+    "cv_random_state": 42,
+    "bootstrap_samples": 30,
+    "bootstrap_confidence_level": 0.95,
+    "bootstrap_random_state": 42,
+    "injection_rates": [
+      0.05,
+      0.1,
+      0.15
+    ],
+    "anomaly_types": [
+      "gaussian_noise",
+      "outliers",
+      "drift"
+    ],
+    "stress_test_fpr_threshold": 0.1,
+    "temporal_splits": 4,
+    "temporal_test_size": 0.2,
+    "temporal_gap": 0,
+    "n_jobs": -1,
+    "verbose": true,
+    "random_state": 42
+  },
+  "data_info": {
+    "n_samples": 800,
+    "n_features": 12,
+    "n_anomalies": 96,
+    "anomaly_rate": 0.12
+  },
+  "cross_validation": {
+    "fold_metrics": [
+      {
+        "fpr": 1.0,
+        "tpr": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1_score": 0.0,
+        "auc_roc": 0.0,
+        "auc_pr": 0.0,
+        "confusion_matrix": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            0
+          ]
+        ],
+        "threshold": 0.5
+      },
+      {
+        "fpr": 1.0,
+        "tpr": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1_score": 0.0,
+        "auc_roc": 0.0,
+        "auc_pr": 0.0,
+        "confusion_matrix": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            0
+          ]
+        ],
+        "threshold": 0.5
+      },
+      {
+        "fpr": 1.0,
+        "tpr": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1_score": 0.0,
+        "auc_roc": 0.0,
+        "auc_pr": 0.0,
+        "confusion_matrix": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            0
+          ]
+        ],
+        "threshold": 0.5
+      },
+      {
+        "fpr": 1.0,
+        "tpr": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1_score": 0.0,
+        "auc_roc": 0.0,
+        "auc_pr": 0.0,
+        "confusion_matrix": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            0
+          ]
+        ],
+        "threshold": 0.5
+      }
+    ],
+    "mean_metrics": {
+      "fpr": 1.0,
+      "tpr": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "auc_roc": 0.0,
+      "auc_pr": 0.0,
+      "confusion_matrix": [
+        [
+          0.0,
+          1.0
+        ],
+        [
+          1.0,
+          0.0
+        ]
+      ],
+      "threshold": 0.5
+    },
+    "std_metrics": {
+      "fpr": 0.0,
+      "tpr": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "auc_roc": 0.0,
+      "auc_pr": 0.0
+    },
+    "n_folds": 4
+  },
+  "error": "All bootstrap samples failed",
+  "validation_time": 0.13258910179138184
+}

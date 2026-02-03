@@ -56,6 +56,10 @@ class DataLoader:
         """
         logger.info(f"Loading ES12 dataset from {data_path}")
         
+        # Convert to Path object if string
+        if isinstance(data_path, str):
+            data_path = Path(data_path)
+        
         # Check if file exists
         if not data_path.exists():
             raise FileNotFoundError(f"ES12 data file not found: {data_path}")

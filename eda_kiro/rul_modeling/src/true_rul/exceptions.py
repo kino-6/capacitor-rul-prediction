@@ -67,3 +67,36 @@ class TimeoutError(PredictionError):
         details = details or {}
         details["timeout_seconds"] = timeout_seconds
         super().__init__(message, code="TIMEOUT_ERROR", details=details)
+
+
+class ModelCompressionError(Exception):
+    """
+    Exception raised when model compression fails
+    """
+    
+    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
+        super().__init__(message)
+        self.message = message
+        self.details = details or {}
+
+
+class CachingError(Exception):
+    """
+    Exception raised when caching operations fail
+    """
+    
+    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
+        super().__init__(message)
+        self.message = message
+        self.details = details or {}
+
+
+class MonitoringError(Exception):
+    """
+    Exception raised when monitoring operations fail
+    """
+    
+    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
+        super().__init__(message)
+        self.message = message
+        self.details = details or {}
