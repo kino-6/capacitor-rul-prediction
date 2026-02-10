@@ -1,0 +1,70 @@
+{
+  "generated_at": "2026-02-06T11:30:38.216906",
+  "integration_status": {
+    "erp": {
+      "status": "connected",
+      "last_sync": "2026-02-06T11:30:38.216194",
+      "connection_test": true
+    },
+    "financial": {
+      "status": "connected",
+      "last_sync": "2026-02-06T11:30:38.216206",
+      "connection_test": true
+    },
+    "supply_chain": {
+      "status": "connected",
+      "last_sync": "2026-02-06T11:30:38.216216",
+      "connection_test": true
+    },
+    "asset_management": {
+      "status": "connected",
+      "last_sync": "2026-02-06T11:30:38.216225",
+      "connection_test": true
+    }
+  },
+  "sync_results": {
+    "erp": {
+      "success": true,
+      "work_orders_synced": 25,
+      "equipment_records_updated": 50,
+      "sync_timestamp": "2026-02-06T11:30:38.216868"
+    },
+    "financial": {
+      "success": true,
+      "transactions_synced": 2,
+      "cost_centers_updated": 15,
+      "sync_timestamp": "2026-02-06T11:30:38.216882"
+    },
+    "supply_chain": {
+      "success": true,
+      "inventory_items_synced": 4,
+      "procurement_requests_processed": 12,
+      "supplier_updates": 5,
+      "sync_timestamp": "2026-02-06T11:30:38.216894"
+    },
+    "asset_management": {
+      "success": true,
+      "assets_synced": 3,
+      "maintenance_records_updated": 45,
+      "depreciation_calculated": 3,
+      "sync_timestamp": "2026-02-06T11:30:38.216904"
+    }
+  },
+  "configured_systems": [
+    "erp",
+    "financial",
+    "supply_chain",
+    "asset_management"
+  ],
+  "connected_systems": [
+    "erp",
+    "financial",
+    "supply_chain",
+    "asset_management"
+  ],
+  "summary": {
+    "total_systems": 4,
+    "connected_systems": 4,
+    "integration_health": "healthy"
+  }
+}

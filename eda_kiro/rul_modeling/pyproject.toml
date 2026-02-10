@@ -20,6 +20,10 @@ dependencies = [
     "uvicorn>=0.24.0",
     "torch>=2.0.0",
     "optuna>=3.4.0",
+    "tqdm>=4.65.0",
+    "plotly>=5.17.0",
+    "dash>=2.14.0",
+    "dash-bootstrap-components>=1.5.0",
 ]
 
 [project.optional-dependencies]

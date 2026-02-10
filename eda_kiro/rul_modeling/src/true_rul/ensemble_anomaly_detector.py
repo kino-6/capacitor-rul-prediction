@@ -10,6 +10,8 @@ import numpy as np
 from typing import Dict, Any, List, Tuple, Optional
 import logging
 from sklearn.metrics import roc_curve, auc
+from tqdm import tqdm
+import time
 
 from .isolation_forest_detector import IsolationForestDetector
 from .autoencoder_detector import AutoencoderDetector
@@ -120,6 +122,7 @@ class EnsembleAnomalyDetector:
             raise ValueError("normal_data must contain at least 2 samples")
         
         logger.info(f"Fitting ensemble on {n_samples} normal samples with {n_features} features")
+        start_time = time.time()
         
         # Store feature names
         self.feature_names = feature_names
@@ -130,19 +133,30 @@ class EnsembleAnomalyDetector:
             **self.autoencoder_params
         )
         
-        # Fit each detector
+        # Fit each detector with progress tracking
         detector_scores = []
         
-        for i, (detector, name) in enumerate(zip(self.detectors, self.detector_names)):
-            logger.info(f"Training {name}...")
+        # Create progress bar for detectors
+        detector_pbar = tqdm(
+            zip(self.detectors, self.detector_names), 
+            total=len(self.detectors),
+            desc="Training detectors"
+        )
+        
+        for i, (detector, name) in enumerate(detector_pbar):
+            detector_pbar.set_description(f"Training {name}")
+            detector_start = time.time()
             
             try:
                 if isinstance(detector, AutoencoderDetector):
-                    # Autoencoder needs special training parameters
+                    # Autoencoder needs special training parameters (heavily reduced for faster training)
                     detector.fit(
                         normal_data, 
-                        epochs=100, 
-                        batch_size=min(32, n_samples // 4),
+                        epochs=5,  # Further reduced from 20 to 5
+                        batch_size=min(16, max(4, n_samples // 2)),  # Smaller batch size
+                        learning_rate=0.01,  # Higher learning rate
+                        validation_split=0.1,  # Smaller validation split
+                        early_stopping_patience=2,  # Very early stopping
                         verbose=False
                     )
                 else:
@@ -161,11 +175,15 @@ class EnsembleAnomalyDetector:
                     scores = -scores
                 
                 detector_scores.append(scores)
-                logger.info(f"{name} training completed")
+                detector_time = time.time() - detector_start
+                detector_pbar.set_postfix({'time': f'{detector_time:.1f}s'})
+                logger.info(f"{name} training completed in {detector_time:.2f}s")
                 
             except Exception as e:
                 logger.error(f"Failed to train {name}: {e}")
                 raise
+        
+        detector_pbar.close()
         
         # Store training scores for analysis
         self.training_scores = np.array(detector_scores).T  # Shape: (n_samples, n_detectors)
@@ -182,7 +200,8 @@ class EnsembleAnomalyDetector:
             self.threshold = np.percentile(ensemble_scores, 95)
         
         self.is_fitted = True
-        logger.info(f"Ensemble training completed. Decision threshold: {self.threshold:.4f}")
+        total_time = time.time() - start_time
+        logger.info(f"Ensemble training completed in {total_time:.2f}s. Decision threshold: {self.threshold:.4f}")
         
         return self
     

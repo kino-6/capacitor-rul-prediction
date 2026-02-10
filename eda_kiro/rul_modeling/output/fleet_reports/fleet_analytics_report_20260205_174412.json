@@ -1,0 +1,660 @@
+{
+  "generated_at": "2026-02-05T17:44:12.801242",
+  "fleet_health": {
+    "fleet_id": "main_fleet",
+    "overall_health_score": 0.5868069828380125,
+    "equipment_count": 50,
+    "critical_equipment_count": 5,
+    "average_rul": 97.03520098124469,
+    "health_distribution": {
+      "healthy": 28,
+      "warning": 17,
+      "critical": 5
+    },
+    "top_risk_equipment": [
+      {
+        "equipment_id": "EQ_001",
+        "equipment_type": "compressor",
+        "health_score": 0.0,
+        "rul_cycles": 6.428668179219407,
+        "risk_factors": [
+          "Very Low RUL",
+          "Aging Equipment"
+        ]
+      },
+      {
+        "equipment_id": "EQ_004",
+        "equipment_type": "pump",
+        "health_score": 0.0,
+        "rul_cycles": 6.705241236872915,
+        "risk_factors": [
+          "Very Low RUL",
+          "Aging Equipment"
+        ]
+      },
+      {
+        "equipment_id": "EQ_003",
+        "equipment_type": "compressor",
+        "health_score": 0.03601435724418875,
+        "rul_cycles": 8.663618432936918,
+        "risk_factors": [
+          "Very Low RUL"
+        ]
+      },
+      {
+        "equipment_id": "EQ_000",
+        "equipment_type": "pump",
+        "health_score": 0.0551668292009945,
+        "rul_cycles": 12.965429868602328,
+        "risk_factors": [
+          "Very Low RUL",
+          "Anomaly Detected"
+        ]
+      },
+      {
+        "equipment_id": "EQ_002",
+        "equipment_type": "capacitor",
+        "health_score": 0.1735425209884036,
+        "rul_cycles": 11.174815096277165,
+        "risk_factors": [
+          "Very Low RUL"
+        ]
+      },
+      {
+        "equipment_id": "EQ_012",
+        "equipment_type": "pump",
+        "health_score": 0.3,
+        "rul_cycles": 24.435632832473253,
+        "risk_factors": [
+          "Low RUL",
+          "Aging Equipment"
+        ]
+      },
+      {
+        "equipment_id": "EQ_013",
+        "equipment_type": "motor",
+        "health_score": 0.3,
+        "rul_cycles": 25.57325817623503,
+        "risk_factors": [
+          "Low RUL",
+          "Aging Equipment"
+        ]
+      },
+      {
+        "equipment_id": "EQ_007",
+        "equipment_type": "motor",
+        "health_score": 0.33416640719276935,
+        "rul_cycles": 35.80600944007258,
+        "risk_factors": [
+          "Low RUL"
+        ]
+      },
+      {
+        "equipment_id": "EQ_005",
+        "equipment_type": "motor",
+        "health_score": 0.3413504651688444,
+        "rul_cycles": 23.906884560255357,
+        "risk_factors": [
+          "Low RUL",
+          "Anomaly Detected"
+        ]
+      },
+      {
+        "equipment_id": "EQ_014",
+        "equipment_type": "motor",
+        "health_score": 0.3521703202647851,
+        "rul_cycles": 44.97416192535173,
+        "risk_factors": [
+          "Low RUL"
+        ]
+      }
+    ],
+    "health_trend": "improving"
+  },
+  "maintenance_schedule": [
+    {
+      "equipment_id": "EQ_001",
+      "equipment_type": "compressor",
+      "scheduled_date": "2026-02-09T04:01:29.731597",
+      "maintenance_type": "corrective",
+      "priority": 5,
+      "estimated_duration_hours": 5.0,
+      "estimated_cost": 5700.0,
+      "required_resources": [
+        "technician",
+        "maintenance_bay"
+      ],
+      "rul_at_schedule": 6.428668179219407,
+      "risk_score": 0.8821418358860172
+    },
+    {
+      "equipment_id": "EQ_003",
+      "equipment_type": "compressor",
+      "scheduled_date": "2026-02-09T09:39:49.433521",
+      "maintenance_type": "corrective",
+      "priority": 5,
+      "estimated_duration_hours": 5.0,
+      "estimated_cost": 5700.0,
+      "required_resources": [
+        "technician",
+        "maintenance_bay"
+      ],
+      "rul_at_schedule": 8.663618432936918,
+      "risk_score": 0.8585506943189991
+    },
+    {
+      "equipment_id": "EQ_004",
+      "equipment_type": "pump",
+      "scheduled_date": "2026-02-09T10:39:45.643782",
+      "maintenance_type": "corrective",
+      "priority": 5,
+      "estimated_duration_hours": 3.5,
+      "estimated_cost": 5150.0,
+      "required_resources": [
+        "technician",
+        "maintenance_bay"
+      ],
+      "rul_at_schedule": 6.705241236872915,
+      "risk_score": 0.7866727216517557
+    },
+    {
+      "equipment_id": "EQ_000",
+      "equipment_type": "pump",
+      "scheduled_date": "2026-02-13T16:54:25.941557",
+      "maintenance_type": "preventive",
+      "priority": 4,
+      "estimated_duration_hours": 3.5,
+      "estimated_cost": 1850.0,
+      "required_resources": [
+        "technician",
+        "maintenance_bay"
+      ],
+      "rul_at_schedule": 12.965429868602328,
+      "risk_score": 0.7275487179076446
+    },
+    {
+      "equipment_id": "EQ_002",
+      "equipment_type": "capacitor",
+      "scheduled_date": "2026-02-11T21:55:56.825231",
+      "maintenance_type": "preventive",
+      "priority": 4,
+      "estimated_duration_hours": 2.5,
+      "estimated_cost": 1650.0,
+      "required_resources": [
+        "technician",
+        "maintenance_bay"
+      ],
+      "rul_at_schedule": 11.174815096277165,
+      "risk_score": 0.7006683102553141
+    },
+    {
+      "equipment_id": "EQ_005",
+      "equipment_type": "motor",
+      "scheduled_date": "2026-02-24T15:30:07.626923",
+      "maintenance_type": "preventive",
+      "priority": 4,
+      "estimated_duration_hours": 4.0,
+      "estimated_cost": 2050.0,
+      "required_resources": [
+        "technician",
+        "maintenance_bay"
+      ],
+      "rul_at_schedule": 23.906884560255357,
+      "risk_score": 0.6609311543974465
+    },
+    {
+      "equipment_id": "EQ_013",
+      "equipment_type": "motor",
+      "scheduled_date": "2026-02-26T07:29:42.307352",
+      "maintenance_type": "preventive",
+      "priority": 4,
+      "estimated_duration_hours": 4.0,
+      "estimated_cost": 2050.0,
+      "required_resources": [
+        "technician",
+        "maintenance_bay"
+      ],
+      "rul_at_schedule": 25.57325817623503,
+      "risk_score": 0.6442674182376498
+    },
+    {
+      "equipment_id": "EQ_011",
+      "equipment_type": "compressor",
+      "scheduled_date": "2026-03-03T17:28:11.317497",
+      "maintenance_type": "inspection",
+      "priority": 2,
+      "estimated_duration_hours": 5.0,
+      "estimated_cost": 2200.0,
+      "required_resources": [
+        "technician",
+        "maintenance_bay"
+      ],
+      "rul_at_schedule": 30.988871719602567,
+      "risk_score": 0.6228952429597506
+    },
+    {
+      "equipment_id": "EQ_012",
+      "equipment_type": "pump",
+      "scheduled_date": "2026-02-25T04:11:31.477650",
+      "maintenance_type": "preventive",
+      "priority": 4,
+      "estimated_duration_hours": 3.5,
+      "estimated_cost": 1850.0,
+      "required_resources": [
+        "technician",
+        "maintenance_bay"
+      ],
+      "rul_at_schedule": 24.435632832473253,
+      "risk_score": 0.6192190232488637
+    },
+    {
+      "equipment_id": "EQ_009",
+      "equipment_type": "compressor",
+      "scheduled_date": "2026-03-09T12:49:23.327736",
+      "maintenance_type": "inspection",
+      "priority": 2,
+      "estimated_duration_hours": 5.0,
+      "estimated_cost": 2200.0,
+      "required_resources": [
+        "technician",
+        "maintenance_bay"
+      ],
+      "rul_at_schedule": 35.795260727022786,
+      "risk_score": 0.572161136770315
+    },
+    {
+      "equipment_id": "EQ_007",
+      "equipment_type": "motor",
+      "scheduled_date": "2026-03-09T13:04:52.016541",
+      "maintenance_type": "inspection",
+      "priority": 2,
+      "estimated_duration_hours": 4.0,
+      "estimated_cost": 1850.0,
+      "required_resources": [
+        "technician",
+        "maintenance_bay"
+      ],
+      "rul_at_schedule": 35.80600944007258,
+      "risk_score": 0.5419399055992742
+    },
+    {
+      "equipment_id": "EQ_008",
+      "equipment_type": "motor",
+      "scheduled_date": "2026-03-16T07:50:28.810457",
+      "maintenance_type": "inspection",
+      "priority": 2,
+      "estimated_duration_hours": 4.0,
+      "estimated_cost": 1850.0,
+      "required_resources": [
+        "technician",
+        "maintenance_bay"
+      ],
+      "rul_at_schedule": 41.58768529556319,
+      "risk_score": 0.4841231470443681
+    },
+    {
+      "equipment_id": "EQ_014",
+      "equipment_type": "motor",
+      "scheduled_date": "2026-03-17T17:07:00.391276",
+      "maintenance_type": "inspection",
+      "priority": 2,
+      "estimated_duration_hours": 4.0,
+      "estimated_cost": 1850.0,
+      "required_resources": [
+        "technician",
+        "maintenance_bay"
+      ],
+      "rul_at_schedule": 44.97416192535173,
+      "risk_score": 0.4502583807464827
+    },
+    {
+      "equipment_id": "EQ_006",
+      "equipment_type": "compressor",
+      "scheduled_date": "2026-03-23T22:53:01.834976",
+      "maintenance_type": "inspection",
+      "priority": 2,
+      "estimated_duration_hours": 5.0,
+      "estimated_cost": 2200.0,
+      "required_resources": [
+        "technician",
+        "maintenance_bay"
+      ],
+      "rul_at_schedule": 50.2144564127061,
+      "risk_score": 0.4199585156436578
+    },
+    {
+      "equipment_id": "EQ_010",
+      "equipment_type": "capacitor",
+      "scheduled_date": "2026-03-30T18:59:08.637064",
+      "maintenance_type": "inspection",
+      "priority": 2,
+      "estimated_duration_hours": 2.5,
+      "estimated_cost": 1450.0,
+      "required_resources": [
+        "technician",
+        "maintenance_bay"
+      ],
+      "rul_at_schedule": 57.05203514053396,
+      "risk_score": 0.29287079875080924
+    },
+    {
+      "equipment_id": "EQ_016",
+      "equipment_type": "motor",
+      "scheduled_date": "2026-04-21T19:14:08.069615",
+      "maintenance_type": "inspection",
+      "priority": 2,
+      "estimated_duration_hours": 4.0,
+      "estimated_cost": 1850.0,
+      "required_resources": [
+        "technician",
+        "maintenance_bay"
+      ],
+      "rul_at_schedule": 80.06244523943789,
+      "risk_score": 0.09937554760562109
+    },
+    {
+      "equipment_id": "EQ_044",
+      "equipment_type": "compressor",
+      "scheduled_date": "2026-04-27T04:12:44.774250",
+      "maintenance_type": "inspection",
+      "priority": 2,
+      "estimated_duration_hours": 5.0,
+      "estimated_cost": 2200.0,
+      "required_resources": [
+        "technician",
+        "maintenance_bay"
+      ],
+      "rul_at_schedule": 85.43648117264534,
+      "risk_score": 0.048170476510965815
+    },
+    {
+      "equipment_id": "EQ_042",
+      "equipment_type": "compressor",
+      "scheduled_date": "2026-04-27T06:13:28.193413",
+      "maintenance_type": "inspection",
+      "priority": 2,
+      "estimated_duration_hours": 5.0,
+      "estimated_cost": 2200.0,
+      "required_resources": [
+        "technician",
+        "maintenance_bay"
+      ],
+      "rul_at_schedule": 85.52031704261033,
+      "risk_score": 0.04728554232800208
+    },
+    {
+      "equipment_id": "EQ_030",
+      "equipment_type": "capacitor",
+      "scheduled_date": "2026-04-27T23:18:56.706480",
+      "maintenance_type": "inspection",
+      "priority": 2,
+      "estimated_duration_hours": 2.5,
+      "estimated_cost": 1450.0,
+      "required_resources": [
+        "technician",
+        "maintenance_bay"
+      ],
+      "rul_at_schedule": 85.23245261053205,
+      "risk_score": 0.042378199017492894
+    }
+  ],
+  "resource_allocation": [
+    {
+      "resource_type": "technicians",
+      "total_available": 8,
+      "total_required": 9,
+      "allocation_efficiency": 0.0859375,
+      "bottleneck_periods": [],
+      "optimization_suggestions": [
+        "Consider increasing technicians capacity"
+      ],
+      "cost_impact": 0.0
+    },
+    {
+      "resource_type": "maintenance_bays",
+      "total_available": 4,
+      "total_required": 9,
+      "allocation_efficiency": 0.171875,
+      "bottleneck_periods": [],
+      "optimization_suggestions": [
+        "Consider increasing maintenance_bays capacity"
+      ],
+      "cost_impact": 0.0
+    },
+    {
+      "resource_type": "specialized_tools",
+      "total_available": 2,
+      "total_required": 19,
+      "allocation_efficiency": 0.6785714285714286,
+      "bottleneck_periods": [
+        "2026-02-09",
+        "2026-04-27"
+      ],
+      "optimization_suggestions": [
+        "Reschedule maintenance during 2 bottleneck periods",
+        "Consider increasing specialized_tools capacity"
+      ],
+      "cost_impact": 4000
+    }
+  ],
+  "budget_forecast": [
+    {
+      "period": "2026-02",
+      "total_budget": 93000.0,
+      "preventive_maintenance_cost": 9450.0,
+      "corrective_maintenance_cost": 16550.0,
+      "parts_cost": 11280.0,
+      "labor_cost": 16920.0,
+      "downtime_cost": 64800.0,
+      "budget_variance": 0.0,
+      "cost_drivers": [
+        {
+          "driver": "High Corrective Maintenance",
+          "impact": 16550.0,
+          "percentage": 17.79569892473118
+        },
+        {
+          "driver": "Emergency Maintenance",
+          "impact": 12000,
+          "percentage": 15.0
+        }
+      ],
+      "savings_opportunities": []
+    },
+    {
+      "period": "2026-03",
+      "total_budget": 55500.0,
+      "preventive_maintenance_cost": 0,
+      "corrective_maintenance_cost": 0,
+      "parts_cost": 4560.0,
+      "labor_cost": 6840.0,
+      "downtime_cost": 44100.0,
+      "budget_variance": 0.0,
+      "cost_drivers": [],
+      "savings_opportunities": []
+    },
+    {
+      "period": "2026-04",
+      "total_budget": 37400.0,
+      "preventive_maintenance_cost": 0,
+      "corrective_maintenance_cost": 0,
+      "parts_cost": 3080.0,
+      "labor_cost": 4620.0,
+      "downtime_cost": 29700.0,
+      "budget_variance": 0.0,
+      "cost_drivers": [],
+      "savings_opportunities": []
+    },
+    {
+      "period": "2026-05",
+      "total_budget": 0.0,
+      "preventive_maintenance_cost": 0,
+      "corrective_maintenance_cost": 0,
+      "parts_cost": 0.0,
+      "labor_cost": 0.0,
+      "downtime_cost": 0.0,
+      "budget_variance": 0.0,
+      "cost_drivers": [],
+      "savings_opportunities": []
+    },
+    {
+      "period": "2026-06",
+      "total_budget": 0.0,
+      "preventive_maintenance_cost": 0,
+      "corrective_maintenance_cost": 0,
+      "parts_cost": 0.0,
+      "labor_cost": 0.0,
+      "downtime_cost": 0.0,
+      "budget_variance": 0.0,
+      "cost_drivers": [],
+      "savings_opportunities": []
+    },
+    {
+      "period": "2026-07",
+      "total_budget": 0.0,
+      "preventive_maintenance_cost": 0,
+      "corrective_maintenance_cost": 0,
+      "parts_cost": 0.0,
+      "labor_cost": 0.0,
+      "downtime_cost": 0.0,
+      "budget_variance": 0.0,
+      "cost_drivers": [],
+      "savings_opportunities": []
+    },
+    {
+      "period": "2026-08",
+      "total_budget": 0.0,
+      "preventive_maintenance_cost": 0,
+      "corrective_maintenance_cost": 0,
+      "parts_cost": 0.0,
+      "labor_cost": 0.0,
+      "downtime_cost": 0.0,
+      "budget_variance": 0.0,
+      "cost_drivers": [],
+      "savings_opportunities": []
+    },
+    {
+      "period": "2026-09",
+      "total_budget": 0.0,
+      "preventive_maintenance_cost": 0,
+      "corrective_maintenance_cost": 0,
+      "parts_cost": 0.0,
+      "labor_cost": 0.0,
+      "downtime_cost": 0.0,
+      "budget_variance": 0.0,
+      "cost_drivers": [],
+      "savings_opportunities": []
+    },
+    {
+      "period": "2026-10",
+      "total_budget": 0.0,
+      "preventive_maintenance_cost": 0,
+      "corrective_maintenance_cost": 0,
+      "parts_cost": 0.0,
+      "labor_cost": 0.0,
+      "downtime_cost": 0.0,
+      "budget_variance": 0.0,
+      "cost_drivers": [],
+      "savings_opportunities": []
+    },
+    {
+      "period": "2026-11",
+      "total_budget": 0.0,
+      "preventive_maintenance_cost": 0,
+      "corrective_maintenance_cost": 0,
+      "parts_cost": 0.0,
+      "labor_cost": 0.0,
+      "downtime_cost": 0.0,
+      "budget_variance": 0.0,
+      "cost_drivers": [],
+      "savings_opportunities": []
+    },
+    {
+      "period": "2026-12",
+      "total_budget": 0.0,
+      "preventive_maintenance_cost": 0,
+      "corrective_maintenance_cost": 0,
+      "parts_cost": 0.0,
+      "labor_cost": 0.0,
+      "downtime_cost": 0.0,
+      "budget_variance": 0.0,
+      "cost_drivers": [],
+      "savings_opportunities": []
+    },
+    {
+      "period": "2027-01",
+      "total_budget": 0.0,
+      "preventive_maintenance_cost": 0,
+      "corrective_maintenance_cost": 0,
+      "parts_cost": 0.0,
+      "labor_cost": 0.0,
+      "downtime_cost": 0.0,
+      "budget_variance": 0.0,
+      "cost_drivers": [],
+      "savings_opportunities": []
+    }
+  ],
+  "optimization_opportunities": [
+    {
+      "category": "fleet_strategy",
+      "opportunity": "Fleet Modernization Assessment",
+      "description": "Consider equipment replacement or major overhaul for aging fleet",
+      "impact": "High",
+      "estimated_savings": 400000,
+      "implementation_effort": "High",
+      "timeline": "3-6 months"
+    },
+    {
+      "category": "fleet_health",
+      "opportunity": "Critical Equipment Intervention",
+      "description": "Immediate attention needed for 5 critical equipment",
+      "impact": "High",
+      "estimated_savings": 75000,
+      "implementation_effort": "Medium",
+      "timeline": "1-2 weeks"
+    },
+    {
+      "category": "maintenance_scheduling",
+      "opportunity": "Preventive Maintenance Optimization",
+      "description": "Rebalance maintenance schedule to reduce high-priority reactive maintenance",
+      "impact": "Medium",
+      "estimated_savings": 24000,
+      "implementation_effort": "Low",
+      "timeline": "2-4 weeks"
+    },
+    {
+      "category": "resource_allocation",
+      "opportunity": "Specialized_Tools Efficiency Improvement",
+      "description": "Optimize specialized_tools allocation to improve efficiency from 67.9% to 85%+",
+      "impact": "Medium",
+      "estimated_savings": 2000.0,
+      "implementation_effort": "Medium",
+      "timeline": "4-6 weeks"
+    },
+    {
+      "category": "resource_allocation",
+      "opportunity": "Technicians Efficiency Improvement",
+      "description": "Optimize technicians allocation to improve efficiency from 8.6% to 85%+",
+      "impact": "Medium",
+      "estimated_savings": 0.0,
+      "implementation_effort": "Medium",
+      "timeline": "4-6 weeks"
+    },
+    {
+      "category": "resource_allocation",
+      "opportunity": "Maintenance_Bays Efficiency Improvement",
+      "description": "Optimize maintenance_bays allocation to improve efficiency from 17.2% to 85%+",
+      "impact": "Medium",
+      "estimated_savings": 0.0,
+      "implementation_effort": "Medium",
+      "timeline": "4-6 weeks"
+    }
+  ],
+  "summary": {
+    "total_equipment": 50,
+    "critical_equipment": 5,
+    "scheduled_maintenance_items": 19,
+    "total_estimated_budget": 185900.0,
+    "potential_savings": 501000.0
+  }
+}
